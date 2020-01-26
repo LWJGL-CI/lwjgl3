@@ -111,6 +111,37 @@ matrix:
     - JAVA_HOME=$TRAVIS_BUILD_DIR/jdk8 ant compile-templates upload-native -Dgcc.version=4.8 -Dgcc.libpath.opengl=/usr/lib/aarch64-linux-gnu/mesa
 
   # -----------------
+  - name: "Linux mips64"
+  # -----------------
+    dist: xenial
+    language: java
+    jdk: openjdk8
+
+    addons:
+      apt:
+        packages:
+        - ant
+        - gcc-5-mips64el-linux-gnuabi64
+        - g++-5-mips64el-linux-gnuabi64
+        - libc6-dev-mips64el-cross
+
+    before_install:
+    - pip install --user awscli
+    - export PATH=$PATH:$HOME/.local/bin
+    - sudo rm -rf /etc/apt/sources.list
+    - sudo sh -c "echo 'deb http://deb.debian.org/debian stretch main' >> /etc/apt/sources.list"
+    - sudo dpkg --add-architecture mips64el
+    - sudo apt-get update || true
+    - sudo apt-get -yq --allow-unauthenticated install libglu-dev:mips64el libgl1-mesa-glx:mips64el libx11-dev:mips64el libdrm2:mips64el libglapi-mesa:mips64el libgl1-mesa-dev:mips64el libgl-dev:mips64el -o Dpkg::Options::="--force-overwrite"
+
+    script:
+    - export LWJGL_BUILD_TYPE=nightly
+    - export LWJGL_BUILD_ARCH=mips64
+    - curl $JDK_LINUX --output jdk8.tar.gz
+    - mkdir jdk8 && tar xf jdk8.tar.gz -C jdk8 --strip-components 1
+    - JAVA_HOME=$TRAVIS_BUILD_DIR/jdk8 ant compile-templates upload-native -Dgcc.version=5 -Dgcc.libpath.opengl=/usr/lib/mips64el-linux-gnuabi64/mesa
+
+  # -----------------
   - name: "macOS"
   # -----------------
     language: objective-c
