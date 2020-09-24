@@ -4,9 +4,9 @@ name: LWJGL Build
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master
+  #push:
+    #branches:
+      #- master
 
 env:
   JAVA_HOME: jdk8

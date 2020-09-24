@@ -1,0 +1,306 @@
+name: LWJGL CI Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+env:
+  AWS_DEFAULT_REGION: us-east-1
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  JAVA_HOME: jdk8
+  ANT_OPTS: -Xmx2G
+  LWJGL_BUILD_TYPE: nightly
+  ZULU_BUILD: 80.0.17-ca-jdk8.0.422
+
+jobs:
+  check-kotlinc-cache:
+    name: Check kotlinc cache
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 3
+      - name: Download JDK
+        run: |
+          mkdir jdk8
+          curl https://cdn.azul.com/zulu/bin/zulu8.${ZULU_BUILD}-linux_x64.tar.gz | tar xz -C jdk8 --strip-components 1
+      - name: Check generator hydration
+        run: ant -emacs hydrate-kotlinc
+        id: hydration
+        continue-on-error: true
+      - name: Cache kotlinc output
+        run: |
+          git clone https://github.com/LWJGL-CI/OculusSDK.git ../OculusSDK
+          ANT_OPTS=-Xmx4G ant -emacs cache-kotlinc -Drevision="HEAD~2..HEAD~1"
+        if: steps.hydration.outcome == 'failure'
+
+  linux:
+    name: Linux
+    needs: check-kotlinc-cache
+    runs-on: ubuntu-latest
+    container:
+      image: centos:7
+    strategy:
+      fail-fast: false
+      matrix:
+        ARCH: [x64]
+        include:
+          - ARCH: x64
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Upgrade git
+        run: |
+          sed -i \
+            -e 's/^mirrorlist/#mirrorlist/' \
+            -e 's/^#baseurl/baseurl/' \
+            -e 's/mirror\.centos\.org/vault.centos.org/' \
+            /etc/yum.repos.d/*.repo
+          yum -y install https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm
+          yum -y install git
+      - name: Checkout repository
+        run: git clone --depth 3 https://github.com/${{ github.repository }}.git .
+      - name: Configure yum
+        run: |
+          yum -y install epel-release
+          yum -y update
+      - name: Install build dependencies
+        run: |
+          yum -y install centos-release-scl
+          sed -i \
+            -e 's/^mirrorlist/#mirrorlist/' \
+            -e 's/^#baseurl/baseurl/' \
+            -e 's/^# baseurl/baseurl/' \
+            -e 's/mirror\.centos\.org/vault.centos.org/' \
+            /etc/yum.repos.d/CentOS-SCLo-scl*.repo
+          yum -y install devtoolset-11-gcc-c++
+          yum -y install ant awscli
+      - name: Install LWJGL dependencies
+        run: |
+          yum -y install libX11-devel libXt-devel gtk3-devel libdbus-1-dev
+          mkdir jdk8
+          curl -L https://cdn.azul.com/zulu/bin/zulu8.${ZULU_BUILD}-linux_x64.tar.gz | tar xz -C jdk8 --strip-components 1
+      - name: Hydrate generator
+        run: |
+          git config --global --add safe.directory $PWD
+          ant -emacs hydrate-kotlinc clean-generated generate
+      - name: Build Java
+        run: ant -emacs compile
+      - name: Build native
+        run: |
+          source scl_source enable devtoolset-11 || true
+          ant -emacs compile-native
+      - name: Run tests
+        run: |
+          source scl_source enable devtoolset-11 || true
+          ant -emacs tests
+      - name: Upload artifacts
+        run: |
+          source scl_source enable devtoolset-11 || true
+          ant -emacs upload-native
+
+  linux-cross:
+    name: Linux Cross
+    needs: check-kotlinc-cache
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        ARCH: [arm32, arm64, ppc64le, riscv64]
+        include:
+          # ----
+          - ARCH: arm32
+            CROSS_ARCH: armhf
+            TRIPLET: arm-linux-gnueabihf
+            # ----
+          - ARCH: arm64
+            CROSS_ARCH: arm64
+            TRIPLET: aarch64-linux-gnu
+          # ----
+          - ARCH: ppc64le
+            CROSS_ARCH: ppc64el
+            TRIPLET: powerpc64le-linux-gnu
+          # ----
+          - ARCH: riscv64
+            CROSS_ARCH: riscv64
+            TRIPLET: riscv64-linux-gnu
+    env:
+      LWJGL_BUILD_ARCH: ${{matrix.ARCH}}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 3
+      - name: Install dependencies
+        run: |
+          git config --global --add safe.directory $(pwd)
+          DEBIAN_FRONTEND=noninteractive sudo apt-get -yq update
+          DEBIAN_FRONTEND=noninteractive sudo apt-get -yq install ant awscli curl gcc-${{matrix.TRIPLET}} g++-${{matrix.TRIPLET}} libc6-dev-${{matrix.CROSS_ARCH}}-cross
+          mkdir jdk8
+          curl -L https://cdn.azul.com/zulu/bin/zulu8.${ZULU_BUILD}-linux_x64.tar.gz | tar xz -C jdk8 --strip-components 1
+      - name: Prepare cross-compilation for ${{matrix.CROSS_ARCH}}
+        run: |
+          sudo sed -i 's/deb mirror/deb [arch=amd64,i386] mirror/' /etc/apt/sources.list
+          sudo grep "mirror+file" /etc/apt/sources.list | sudo tee /etc/apt/sources.list.d/ports.list
+          sudo sed -i 's/amd64,i386/${{matrix.CROSS_ARCH}}/' /etc/apt/sources.list.d/ports.list
+          sudo sed -i 's#mirror+file:/etc/apt/apt-mirrors.txt#http://ports.ubuntu.com/ubuntu-ports/#' /etc/apt/sources.list.d/ports.list
+          sudo dpkg --add-architecture ${{matrix.CROSS_ARCH}}
+          sudo apt-get update || true
+      - name: Install cross-compilation dependencies
+        run: DEBIAN_FRONTEND=noninteractive sudo apt-get -yq -f --allow-unauthenticated --no-install-suggests --no-install-recommends install libgtk-3-dev:${{matrix.CROSS_ARCH}} libatk-bridge2.0-dev:${{matrix.CROSS_ARCH}} libgdk-pixbuf2.0-dev:${{matrix.CROSS_ARCH}} libglu-dev:${{matrix.CROSS_ARCH}} libgl1-mesa-glx:${{matrix.CROSS_ARCH}} libx11-dev:${{matrix.CROSS_ARCH}} libxt-dev:${{matrix.CROSS_ARCH}} libdbus-1-dev:${{matrix.CROSS_ARCH}} -o Dpkg::Options::="--force-overwrite"
+      - name: Hydrate generator
+        run: ant -emacs hydrate-kotlinc clean-generated generate
+      - name: Build Java
+        run: ant -emacs compile
+      - name: Build native
+        run: ant -emacs compile-native -Dgcc.libpath.opengl=/usr/lib/${{matrix.TRIPLET}}/mesa
+      - name: Upload artifacts
+        run: ant -emacs upload-native
+
+  freebsd-cross:
+    name: FreeBSD Cross
+    needs: check-kotlinc-cache
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 3
+          fetch-tags: true
+      - name: Install dependencies
+        run: |
+          mkdir jdk8
+          curl -L https://cdn.azul.com/zulu/bin/zulu8.${ZULU_BUILD}-linux_x64.tar.gz | tar xz -C jdk8 --strip-components 1
+      - name: Restore kotlinc output
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            bin/classes/generator
+            bin/classes/templates
+          key: cache-kotlinc-${{ github.sha }}
+          enableCrossOsArchive: true
+          fail-on-cache-miss: true
+      - name: Hydrate generator
+        run: ant -emacs hydrate-kotlinc clean-generated generate
+      - name: Build Java
+        run: ant -emacs compile
+      - name: Build, test and upload artifacts
+        uses: cross-platform-actions/action@v0.24.0
+        with:
+          operating_system: freebsd
+          architecture: x86-64
+          version: '13.2'
+          memory: 8G
+          shell: bash
+          environment_variables: AWS_DEFAULT_REGION AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY ANT_OPTS LWJGL_BUILD_TYPE
+          run: |
+            sudo pkg install -y git openjdk8 apache-ant devel/py-awscli gtk3 dbus
+            git config --global --add safe.directory $PWD
+            ant -emacs compile-native
+            ant -emacs tests
+            ant -emacs upload-native
+
+  macos:
+    name: macOS
+    needs: check-kotlinc-cache
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ARCH: [x64, arm64]
+        include:
+          - ARCH: x64
+            JDK: macosx_x64
+          - ARCH: arm64
+            JDK: macosx_aarch64
+    env:
+      LWJGL_BUILD_ARCH: ${{matrix.ARCH}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 3
+      - name: Install dependencies
+        run: |
+          mkdir jdk8
+          curl -L https://cdn.azul.com/zulu/bin/zulu8.${ZULU_BUILD}-${{matrix.JDK}}.tar.gz | tar xz -C jdk8 --strip-components 1
+      - name: Hydrate generator
+        run: ant -emacs hydrate-kotlinc clean-generated generate
+      - name: Build Java
+        run: ant -emacs compile
+      - name: Build native
+        run: ant -emacs compile-native
+      - name: Run tests
+        run: ant -emacs tests
+      - name: Upload artifacts
+        run: ant -emacs upload-native
+
+  windows:
+    name: Windows
+    needs: check-kotlinc-cache
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ARCH: [x86, x64, arm64]
+        include:
+          - ARCH: x86
+            JDK: win_i686
+            MSVC_ARCH: amd64_x86
+          - ARCH: x64
+            JDK: win_x64
+            MSVC_ARCH: amd64
+          - ARCH: arm64
+            JDK: win_x64
+            MSVC_ARCH: amd64_arm64
+    env:
+      ANT_OPTS: -Xmx1G
+      LWJGL_BUILD_ARCH: ${{matrix.ARCH}}
+    defaults:
+      run:
+        shell: cmd
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 3
+      - name: Configure MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.MSVC_ARCH }}
+      - name: Clone Oculus SDK
+        run: git clone https://github.com/LWJGL-CI/OculusSDK.git ../OculusSDK
+        if: contains(matrix.ARCH, 'arm') != true
+      - name: Install dependencies
+        run: |
+          Invoke-WebRequest https://cdn.azul.com/zulu/bin/zulu8.${Env:ZULU_BUILD}-${{matrix.JDK}}.zip -OutFile jdk.zip
+          Expand-Archive -Path jdk.zip -DestinationPath .\
+          Move-Item .\zulu8* .\jdk8
+        shell: pwsh
+      - name: Generate bindings
+        run: ant -emacs hydrate-kotlinc clean-generated generate
+      - name: Build Java
+        run: ant -emacs compile
+      - name: Build native
+        run: |
+          set PATH=%PATH:C:\Program Files\LLVM\bin;=%
+          ant -emacs compile-native
+      - name: Run tests
+        run: ant -emacs tests
+        if: contains(matrix.ARCH, 'arm') != true
+      - name: Print test results
+        run: type bin\test\testng-results.xml
+        if: failure()
+      - name: Upload artifacts
+        run: ant -emacs upload-native
