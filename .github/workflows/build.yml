@@ -4,9 +4,9 @@ name: LWJGL Build
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master
+  #push:
+    #branches:
+      #- master
 
 env:
   JAVA_HOME: jdk8
@@ -205,7 +205,7 @@ jobs:
       - name: Build Java
         run: ant -emacs compile
       - name: Build & Test
-        uses: cross-platform-actions/action@v0.27.0
+        uses: cross-platform-actions/action@v0.28.0
         with:
           operating_system: freebsd
           architecture: x86-64
