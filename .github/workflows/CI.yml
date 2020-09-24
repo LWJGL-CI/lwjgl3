@@ -1,0 +1,379 @@
+name: LWJGL CI Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+env:
+  AWS_DEFAULT_REGION: us-east-1
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  ANT_OPTS: -Xmx2G
+  LWJGL_BUILD_TYPE: nightly
+
+jobs:
+  check-kotlinc-cache:
+    name: Check kotlinc cache
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 3
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '8'
+          check-latest: true
+      - name: Check generator hydration
+        run: ant -emacs hydrate-kotlinc
+        id: hydration
+        continue-on-error: true
+      - name: Cache kotlinc output
+        run: |
+          git clone https://github.com/LWJGL-CI/OculusSDK.git ../OculusSDK
+          ant -emacs cache-kotlinc -Drevision="HEAD~2..HEAD~1"
+        if: steps.hydration.outcome == 'failure'
+
+  linux:
+    name: Linux
+    needs: check-kotlinc-cache
+    runs-on: ubuntu-latest
+    container:
+      image: almalinux:8
+    strategy:
+      fail-fast: false
+      matrix:
+        ARCH: [x64]
+        include:
+          - ARCH: x64
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Install git
+        run: dnf -y install git
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 3
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '8'
+          check-latest: true
+      - name: Install build dependencies
+        run: |
+          dnf -y install epel-release
+          dnf config-manager --set-enabled powertools
+          dnf -y update
+          dnf -y install gcc-toolset-15-gcc gcc-toolset-15-gcc-c++ ant awscli
+      - name: Install LWJGL dependencies
+        run: |
+          dnf -y install \
+            libX11-devel \
+            libXt-devel \
+            gtk3-devel \
+            dbus-devel
+      - name: Hydrate generator
+        run: |
+          git config --global --add safe.directory $PWD
+          ant -emacs hydrate-kotlinc clean-generated generate
+      - name: Build Java
+        run: ant -emacs compile
+      - name: Build native
+        run: |
+          source /opt/rh/gcc-toolset-15/enable || true
+          ant -emacs compile-native -Dgcc.version.print=true
+      - name: Run tests
+        run: ant -emacs tests
+      - name: Upload artifacts
+        run: ant -emacs upload-native
+
+  linux-cross:
+    name: Linux Cross
+    needs: check-kotlinc-cache
+    runs-on: ${{matrix.RUNNER}}
+    strategy:
+      fail-fast: false
+      matrix:
+        ARCH: [arm32, arm64, ppc64le, riscv64]
+        include:
+          - ARCH: arm32
+            RUNNER: ubuntu-22.04
+            CROSS_ARCH: armhf
+            TRIPLET: arm-linux-gnueabihf
+            GCC: 12
+          - ARCH: arm64
+            RUNNER: ubuntu-22.04
+            CROSS_ARCH: arm64
+            TRIPLET: aarch64-linux-gnu
+            GCC: 12
+          - ARCH: ppc64le
+            RUNNER: ubuntu-22.04
+            CROSS_ARCH: ppc64el
+            TRIPLET: powerpc64le-linux-gnu
+            GCC: 12
+          - ARCH: riscv64
+            RUNNER: ubuntu-22.04
+            CROSS_ARCH: riscv64
+            TRIPLET: riscv64-linux-gnu
+            GCC: 14
+    env:
+      LWJGL_BUILD_ARCH: ${{matrix.ARCH}}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 3
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '8'
+          check-latest: true
+      - name: Install dependencies
+        run: |
+          sudo apt-mark hold python3
+          sudo apt-get -yq update
+          sudo apt-get -yq install ant curl \
+            gcc-${{matrix.GCC}}-${{matrix.TRIPLET}} \
+            g++-${{matrix.GCC}}-${{matrix.TRIPLET}} \
+            libc6-dev-${{matrix.CROSS_ARCH}}-cross
+      - name: Prepare cross-compilation for ${{matrix.CROSS_ARCH}}
+        if: matrix.RUNNER == 'ubuntu-22.04'
+        run: |
+          sudo grep 'deb ' /etc/apt/sources.list | sudo tee /etc/apt/sources.list.d/ports.list
+          sudo sed -i 's/^deb /deb [arch=amd64] /' /etc/apt/sources.list
+          sudo sed -i 's#^deb [^ ]\+#deb [arch=${{matrix.CROSS_ARCH}}] https://ports.ubuntu.com/ubuntu-ports/#' /etc/apt/sources.list.d/ports.list
+          sudo dpkg --add-architecture ${{matrix.CROSS_ARCH}}
+          sudo apt-get update
+      - name: Prepare cross-compilation for ${{matrix.CROSS_ARCH}}
+        if: matrix.RUNNER == 'ubuntu-24.04'
+        run: |
+          native="$(dpkg --print-architecture)"
+          . /etc/os-release
+          suite="${VERSION_CODENAME}"
+          keyring="/usr/share/keyrings/ubuntu-archive-keyring.gpg"
+          components="main restricted universe multiverse"
+
+          sudo tee /etc/apt/sources.list.d/ubuntu.sources >/dev/null <<EOF
+          Types: deb
+          URIs: http://archive.ubuntu.com/ubuntu/
+          Suites: ${suite} ${suite}-updates ${suite}-backports
+          Components: ${components}
+          Architectures: ${native}
+          Signed-By: ${keyring}
+          
+          Types: deb
+          URIs: http://security.ubuntu.com/ubuntu/
+          Suites: ${suite}-security
+          Components: ${components}
+          Architectures: ${native}
+          Signed-By: ${keyring}
+          EOF
+
+          sudo tee /etc/apt/sources.list.d/ci-ubuntu-ports.sources >/dev/null <<EOF
+          Types: deb
+          URIs: https://ports.ubuntu.com/ubuntu-ports/
+          Suites: ${suite} ${suite}-updates ${suite}-backports ${suite}-security
+          Components: ${components}
+          Architectures: ${{matrix.CROSS_ARCH}}
+          Signed-By: ${keyring}
+          EOF
+
+          sudo dpkg --add-architecture ${{matrix.CROSS_ARCH}}
+          sudo apt-get update
+      - name: Install cross-compilation dependencies
+        run: |
+          DEBIAN_FRONTEND=noninteractive sudo apt-get -yq install \
+            libgtk-3-dev:${{matrix.CROSS_ARCH}} \
+            libatk-bridge2.0-dev:${{matrix.CROSS_ARCH}} \
+            libgdk-pixbuf2.0-dev:${{matrix.CROSS_ARCH}} \
+            libglu-dev:${{matrix.CROSS_ARCH}} \
+            libgl1:${{matrix.CROSS_ARCH}} \
+            libglx-mesa0:${{matrix.CROSS_ARCH}} \
+            libx11-dev:${{matrix.CROSS_ARCH}} \
+            libxt-dev:${{matrix.CROSS_ARCH}} \
+            libdbus-1-dev:${{matrix.CROSS_ARCH}}
+      - name: Hydrate generator
+        run: |
+          git config --global --add safe.directory $PWD
+          ant -emacs hydrate-kotlinc clean-generated generate
+      - name: Build Java
+        run: ant -emacs compile
+      - name: Build native
+        run: ant -emacs compile-native -Dgcc.version=${{matrix.GCC}} -Dgcc.version.print=true -Dgcc.libpath.opengl=/usr/lib/${{matrix.TRIPLET}}/mesa
+      - name: Upload artifacts
+        run: ant -emacs upload-native
+
+  freebsd-cross:
+    name: FreeBSD Cross
+    needs: check-kotlinc-cache
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 3
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '8'
+          check-latest: true
+      - name: Hydrate generator
+        run: ant -emacs hydrate-kotlinc clean-generated generate
+      - name: Build Java
+        run: ant -emacs compile
+      - name: Start VM
+        uses: cross-platform-actions/action@v1.3.0
+        with:
+          operating_system: freebsd
+          architecture: x86-64
+          version: '14.4'
+          memory: 8G
+          environment_variables: AWS_DEFAULT_REGION AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY ANT_OPTS LWJGL_BUILD_TYPE
+      - name: Install build dependencies
+        shell: cpa.sh {0}
+        run: sudo pkg install -y openjdk8 apache-ant git devel/py-awscli
+      - name: Install LWJGL dependencies
+        shell: cpa.sh {0}
+        run: sudo pkg install -y gtk3 dbus
+      - name: Build native
+        shell: cpa.sh {0}
+        run: ant -emacs compile-native -Dclang.version.print=true
+      - name: Run tests
+        shell: cpa.sh {0}
+        run: ant -emacs tests
+      - name: Print test results
+        run: cat bin/test/testng-results.xml
+        if: failure()
+      - name: Upload artifacts
+        shell: cpa.sh {0}
+        run: |
+            git config --global --add safe.directory $PWD
+            ant -emacs upload-native
+
+  macos:
+    name: macOS
+    needs: check-kotlinc-cache
+    runs-on: ${{matrix.RUNNER}}
+    strategy:
+      fail-fast: false
+      matrix:
+        ARCH: [x64, arm64]
+        include:
+          - ARCH: x64
+            RUNNER: macos-26-intel
+            JDK: x64
+          - ARCH: arm64
+            RUNNER: macos-26
+            JDK: aarch64
+    env:
+      LWJGL_BUILD_ARCH: ${{matrix.ARCH}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 3
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '8'
+          check-latest: true
+      - name: Hydrate generator
+        run: ant -emacs hydrate-kotlinc clean-generated generate
+      - name: Build Java
+        run: ant -emacs compile
+      - name: Build native
+        run: ant -emacs compile-native -Dclang.version.print=true
+      - name: Run tests
+        run: ant -emacs tests
+      - name: Upload artifacts
+        run: ant -emacs upload-native
+
+  windows:
+    name: Windows
+    needs: check-kotlinc-cache
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        ARCH: [x86, x64, arm64]
+        include:
+          - ARCH: x86
+            JDK: i686
+            MSVC_ARCH: amd64_x86
+            #MSVC_ARCH: x86
+            #VCTOOLS: x86.x64
+          - ARCH: x64
+            JDK: x64
+            MSVC_ARCH: amd64
+            #VCTOOLS: x86.x64
+          - ARCH: arm64
+            JDK: x64
+            MSVC_ARCH: amd64_arm64
+            #MSVC_ARCH: arm64
+            #VCTOOLS: ARM64
+    env:
+      ANT_OPTS: -Xmx1G
+      LWJGL_BUILD_ARCH: ${{matrix.ARCH}}
+    defaults:
+      run:
+        shell: cmd
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 3
+      - name: Configure MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.MSVC_ARCH }}
+      - name: Clone Oculus SDK
+        run: git clone https://github.com/LWJGL-CI/OculusSDK.git ../OculusSDK
+        if: contains(matrix.ARCH, 'arm') != true
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '8'
+          check-latest: true
+#      - name: Install Visual Studio 2026 Build Tools
+#        shell: pwsh
+#        run: |
+#          choco install visualstudio2026buildtools --package-parameters "`
+#            --add Microsoft.VisualStudio.Workload.VCTools `
+#            --add Microsoft.VisualStudio.Component.VC.Tools.${{matrix.VCTOOLS}} `
+#            --includeRecommended `
+#            --quiet" `
+#            -y `
+#            --ignore-package-exit-codes=3010
+      - name: Generate bindings
+        run: ant -emacs hydrate-kotlinc clean-generated generate
+      - name: Build Java
+        run: ant -emacs compile
+      - name: Build native
+        #call "C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\Common7\Tools\VsDevCmd.bat" -host_arch=amd64 -arch=${{matrix.MSVC_ARCH}}
+        run: |
+          set PATH=%PATH:C:\Program Files\LLVM\bin;=%
+          ant -emacs compile-native -Dcl.version.print=true
+      - name: Run tests
+        run: ant -emacs tests
+        if: contains(matrix.ARCH, 'arm') != true
+      - name: Print test results
+        run: type bin\test\testng-results.xml
+        if: failure()
+      - name: Upload artifacts
+        run: ant -emacs upload-native
