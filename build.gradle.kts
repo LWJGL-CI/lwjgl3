@@ -53,6 +53,8 @@ val deployment = when {
 version = deployment.version
 println("${deployment.type.name} BUILD")
 
+val artifactsRoot = layout.projectDirectory.asFile
+
 enum class Platforms(val classifier: String) {
     FREEBSD("natives-freebsd"),
     LINUX("natives-linux"),
@@ -73,7 +75,7 @@ enum class Platforms(val classifier: String) {
 
 data class CustomArtifacts(
     val classifiersForBOM: List<String>,
-    val publication: MavenPublication.() -> Unit
+    val classifiers: List<String>
 )
 
 enum class Module(
@@ -83,14 +85,13 @@ enum class Module(
     vararg val platforms: Platforms,
     val custom: CustomArtifacts? = null
 ) {
-    CORE("lwjgl", "LWJGL", "The LWJGL core library.", *Platforms.ALL, custom = CustomArtifacts(listOf("unsafe")) {
-        artifact(CORE.artifact("unsafe")) {
-            classifier = "unsafe"
-        }
-        artifact(CORE.artifact("unsafe-sources")) {
-            classifier = "unsafe-sources"
-        }
-    }),
+    CORE(
+        "lwjgl", "LWJGL", "The LWJGL core library.", *Platforms.ALL,
+        custom = CustomArtifacts(
+            classifiersForBOM = listOf("unsafe"),
+            classifiers = listOf("unsafe", "unsafe-sources")
+        )
+    ),
     ASSIMP(
         "lwjgl-assimp", "LWJGL - Assimp bindings",
         "A portable Open Source library to import various well-known 3D model formats in a uniform manner.",
@@ -312,21 +313,15 @@ enum class Module(
         *Platforms.ALL
     );
 
-    private fun directory(buildDir: String) = "./$buildDir/$artifact"
-
-    private fun path() = "${directory("bin/MAVEN")}/$artifact"
-
-    val isActive get() = File(directory("bin/RELEASE")).exists()
-
-    fun hasArtifact(classifier: String) = File("${directory("bin/RELEASE")}/${artifact}-${classifier}.jar").exists()
-
-    fun artifact(classifier: String? = null) =
-        if (classifier === null)
-            File("${path()}.jar").absoluteFile
-        else
-            File("${path()}-$classifier.jar").absoluteFile
-
 }
+
+val Module.isActive get() = File(artifactsRoot, "bin/RELEASE/$artifact").exists()
+
+fun Module.hasArtifact(classifier: String) =
+    File(artifactsRoot, "bin/RELEASE/$artifact/$artifact-$classifier.jar").exists()
+
+fun Module.artifact(classifier: String? = null) =
+    File(artifactsRoot, "bin/MAVEN/$artifact/$artifact${classifier?.let { "-$it" } ?: ""}.jar")
 
 fun PublishingExtension.setupRepository() {
     repositories {
@@ -391,7 +386,11 @@ Module.values().forEach { module ->
                         artifactId = module.artifact
                         artifact(module.artifact())
                         if (module.custom != null) {
-                            module.custom.publication(this)
+                            module.custom.classifiers.forEach {
+                                artifact(module.artifact(it)) {
+                                    classifier = it
+                                }
+                            }
                         }
                         if (deployment.type !== BuildType.LOCAL || module.hasArtifact("sources")) {
                             artifact(module.artifact("sources")) {
@@ -492,7 +491,7 @@ publishing {
                         asElement().getElementsByTagName("dependencies").item(0).apply {
                             Module.values().forEach { module ->
                                 val classifiers =
-                                    (module.custom?.classifiersForBOM?.asSequence() ?: emptySequence()) +
+                                    module.custom?.classifiersForBOM.orEmpty().asSequence() +
                                     module.platforms.map { it.classifier }
 
                                 classifiers.forEach {
