@@ -1,0 +1,73 @@
+# Produces a new build, uploads it to S3 and publishes a Maven snapshot
+name: LWJGL Snapshot
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  AWS_DEFAULT_REGION: us-east-1
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  ORG_GRADLE_PROJECT_signingKeyId: 9B1FB0FC
+  ORG_GRADLE_PROJECT_signingKey: |
+    ${{ secrets.SIGNING_KEY }}
+  ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PWD }}
+  ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.SONATYPE_USER }}
+  ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.SONATYPE_PWD }}
+  S3_PARAMS: --cache-control "public,must-revalidate,proxy-revalidate,max-age=0"
+  ANT_OPTS: -Xmx8G
+  LWJGL_BUILD_TYPE: nightly
+
+jobs:
+  linux:
+    name: Snapshot
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 3
+          persist-credentials: false
+      - uses: gradle/actions/wrapper-validation@3f131e8634966bd73d06cc69884922b02e6faf92 #v6.2.0
+      - name: Retrieve build number
+        run: |
+          LWJGL_VERSION=$(cat gradle.properties | grep lwjglVersion= | cut -d= -f2)
+          echo "LWJGL_VERSION=$LWJGL_VERSION" >> $GITHUB_ENV
+          aws s3 cp s3://lwjgl-build/ci/next-build.txt .
+          LWJGL_BUILD=$(cat next-build.txt)
+          echo "LWJGL_BUILD=$LWJGL_BUILD" >> $GITHUB_ENV
+      - name: Setup Java
+        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        with:
+          distribution: 'zulu'
+          java-version: |
+            27-ea
+            25
+            8
+          check-latest: true
+      - name: Install dependencies
+        run: |
+          git clone https://github.com/LWJGL-CI/OculusSDK.git ../OculusSDK
+          echo "JAVA8_HOME=$JAVA_HOME" >> "$GITHUB_ENV"
+      - name: Generate bindings
+        run: ant -emacs hydrate-kotlinc clean-generated generate
+      - name: Build Java
+        run: ant -emacs compile
+      - name: "Package ${{env.LWJGL_VERSION}}-snapshot+${{env.LWJGL_BUILD}}"
+        run: |
+          export JAVA_HOME=$JAVA_HOME_27_X64
+          ant -emacs release -Dcore.java27=true -Dbuild.revision=${{env.LWJGL_BUILD}}
+          $JAVA_HOME/bin/jar cfM lwjgl.zip -C bin/RELEASE .
+      - name: Upload snapshot to S3
+        run: |
+          aws s3 cp lwjgl.zip s3://lwjgl-build/nightly/lwjgl.zip $S3_PARAMS
+          aws s3 sync bin/RELEASE s3://lwjgl-build/nightly/bin --delete $S3_PARAMS
+      - name: Publish snapshot to Maven
+        run: JAVA_HOME=$JAVA_HOME_25_X64 ./gradlew -Psnapshot publish --parallel --configuration-cache --max-workers=8 --info
+      - name: Bump build number
+        run: |
+          echo -n $((LWJGL_BUILD+1)) > next-build.txt
+          echo "Next build will be #$(cat next-build.txt)"
+          aws s3 cp next-build.txt s3://lwjgl-build/ci/

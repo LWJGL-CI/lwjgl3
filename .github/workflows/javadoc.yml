@@ -1,0 +1,47 @@
+# Generates javadoc for core + all bindings and uploads it to S3.
+# The resulting javadoc is available at https://javadoc.lwjgl.org/
+name: LWJGL Javadoc generation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  AWS_DEFAULT_REGION: us-east-1
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  S3_PARAMS: --cache-control "public,must-revalidate,proxy-revalidate,max-age=0"
+  ANT_OPTS: -Xmx2G
+  LWJGL_BUILD_TYPE: nightly
+
+jobs:
+  linux:
+    name: Javadoc
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 3
+          persist-credentials: false
+      - name: Setup Java
+        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        with:
+          distribution: 'zulu'
+          java-version: |
+            25
+            8
+          check-latest: true
+      - name: Install dependencies
+        run: |
+          git clone https://github.com/LWJGL-CI/OculusSDK.git ../OculusSDK
+          echo "JAVA8_HOME=$JAVA_HOME" >> "$GITHUB_ENV"
+      - name: Generate bindings
+        run: ant -emacs hydrate-kotlinc clean-generated generate
+      - name: Build Java
+        run: ant -emacs compile
+      - name: Generate javadoc
+        run: JAVA_HOME=$JAVA_HOME_25_X64 ant -emacs javadoc -Dcore.java25=true
+      - name: Upload javadoc to S3
+        run: aws s3 sync bin/javadoc s3://lwjgl-javadoc/ --delete
