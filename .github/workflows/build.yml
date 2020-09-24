@@ -4,15 +4,15 @@ name: LWJGL Build
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master
+  #push:
+    #branches:
+      #- master
 
 env:
   JAVA_HOME: jdk8
   ANT_OPTS: -Xmx1G
   LWJGL_BUILD_TYPE: nightly
-  ZULU_BUILD: 82.0.21-ca-jdk8.0.432
+  ZULU_BUILD: 84.0.15-ca-jdk8.0.442
 
 jobs:
   cache-kotlinc:
