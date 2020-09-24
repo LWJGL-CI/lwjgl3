@@ -1430,6 +1430,7 @@
                 notree="true"
                 public="true"
                 failonerror="true"
+                verbose="true"
                 unless:set="javadoc.skip"
             >
                 <doctitle><![CDATA[<h1>LWJGL - @{title}</h1>]]></doctitle>
