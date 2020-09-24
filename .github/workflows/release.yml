@@ -1,0 +1,74 @@
+# Reproduces the current build, synchronizes S3 and publishes a Maven release
+name: LWJGL Release
+
+on:
+  workflow_dispatch:
+
+env:
+  AWS_DEFAULT_REGION: us-east-1
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  ORG_GRADLE_PROJECT_signingKeyId: 9B1FB0FC
+  ORG_GRADLE_PROJECT_signingKey: |
+    ${{ secrets.SIGNING_KEY }}
+  ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PWD }}
+  ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.SONATYPE_USER }}
+  ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.SONATYPE_PWD }}
+  S3_PARAMS: --cache-control "public,must-revalidate,proxy-revalidate,max-age=0"
+  S3_PARAMS_CONST: --storage-class INTELLIGENT_TIERING --cache-control "public,max-age=86400"
+  JAVA8_HOME: jdk8
+  JAVA_HOME: jdk8
+  ANT_OPTS: -Xmx8G
+  LWJGL_BUILD_TYPE: stable
+  ZULU_BUILD: 90.0.19-ca-jdk8.0.472
+  ZULU_BUILD25: 30.17-ca-jdk25.0.1
+
+jobs:
+  macos:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 3
+      - uses: gradle/actions/wrapper-validation@v4
+      - name: Retrieve version & build number
+        run: |
+          LWJGL_VERSION=$(cat gradle.properties | grep lwjglVersion= | cut -d= -f2)
+          echo "LWJGL_VERSION=$LWJGL_VERSION" >> $GITHUB_ENV
+          aws s3 cp s3://lwjgl-build/ci/next-build.txt .
+          LWJGL_BUILD=$(cat next-build.txt)
+          LWJGL_BUILD=$((LWJGL_BUILD-1))
+          echo "LWJGL_BUILD=$LWJGL_BUILD" >> $GITHUB_ENV
+      - name: Install dependencies
+        run: |
+          git clone https://github.com/LWJGL-CI/OculusSDK.git ../OculusSDK
+          mkdir jdk8
+          mkdir jdk25
+          curl -L https://cdn.azul.com/zulu/bin/zulu8.${ZULU_BUILD}-linux_x64.tar.gz | tar xz -C jdk8 --strip-components 1
+          curl -L https://cdn.azul.com/zulu/bin/zulu25.${ZULU_BUILD25}-linux_x64.tar.gz | tar xz -C jdk25 --strip-components 1
+      - name: Generate bindings
+        run: ant -emacs hydrate-kotlinc clean-generated generate
+      - name: Build Java
+        run: ant -emacs compile
+      - name: "Package ${{env.LWJGL_VERSION}}+${{env.LWJGL_BUILD}}"
+        run: |
+          export JAVA_HOME=jdk25
+          ant -emacs release -Dcore.java25=true -Dbuild.version=${{env.LWJGL_VERSION}} -Dbuild.revision=${{env.LWJGL_BUILD}}
+          $JAVA_HOME/bin/jar cfM lwjgl.zip -C bin/RELEASE .
+      - name: Synchronize latest - Ant dependencies
+        run: |
+          aws s3 sync s3://lwjgl-build/stable/freebsd s3://lwjgl-build/release/latest/freebsd --delete $S3_PARAMS
+          aws s3 sync s3://lwjgl-build/stable/linux s3://lwjgl-build/release/latest/linux --delete $S3_PARAMS
+          aws s3 sync s3://lwjgl-build/stable/macosx s3://lwjgl-build/release/latest/macosx --delete $S3_PARAMS
+          aws s3 sync s3://lwjgl-build/stable/windows s3://lwjgl-build/release/latest/windows --delete $S3_PARAMS
+      - name: Synchronize latest - Artifacts
+        run: |
+          aws s3 cp lwjgl.zip s3://lwjgl-build/release/latest/lwjgl.zip $S3_PARAMS
+          aws s3 sync bin/RELEASE s3://lwjgl-build/release/latest/bin --delete $S3_PARAMS
+      - name: Synchronize release
+        run: |
+          aws s3 sync s3://lwjgl-build/release/latest s3://lwjgl-build/release/${{env.LWJGL_VERSION}} --delete --metadata-directive REPLACE $S3_PARAMS_CONST
+          aws s3 mv s3://lwjgl-build/release/${{env.LWJGL_VERSION}}/lwjgl.zip s3://lwjgl-build/release/${{env.LWJGL_VERSION}}/lwjgl-${{env.LWJGL_VERSION}}.zip --metadata-directive REPLACE $S3_PARAMS_CONST
+      - name: Publish release to Maven
+        run: JAVA_HOME=jdk25 ./gradlew -Prelease publish
