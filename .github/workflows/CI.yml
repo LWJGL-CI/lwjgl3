@@ -9,10 +9,9 @@ on:
 
 env:
   AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-  S3_PARAMS: --cache-control "public,must-revalidate,proxy-revalidate,max-age=0"
+  S3_PARAMS: --cache-control "public,must-revalidate,proxy-revalidate,max-age=0" --endpoint-url ${{ secrets.AWS_ACCESS_KEY_ID }}
   JAVA_HOME: jdk8
   ANT_OPTS: -Xmx2G
   LWJGL_BUILD_TYPE: nightly
