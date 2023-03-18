@@ -3,10 +3,12 @@
   ~ License terms: https://www.lwjgl.org/license
   -->
 <project name="LWJGL" basedir="." default="all" xmlns:if="ant:if" xmlns:unless="ant:unless">
-
+    
     <property name="build.sysclasspath" value="ignore"/>
 
     <property name="config" location="config" relative="true"/>
+
+    <property environment="env"/>
 
     <import file="${config}/build-definitions.xml"/>
     <import file="${config}/build-assets.xml"/>
@@ -283,7 +285,7 @@
 
             <arg value="s3://ci/"/>
             <arg line='--cache-control "public, must-revalidate, proxy-revalidate, max-age=0"'/>
-            <arg value='--endpoint-url ${env.AWS_S3_BUCKET}'/>
+            <arg line='--endpoint-url ${env.AWS_S3_BUCKET}'/>
 
             <fileset file="templates.jar"/>
         </apply>
@@ -1037,7 +1039,7 @@
 
             <arg value="s3://${build.type}/${platform.remote}/${build.arch}/"/>
             <arg line='--cache-control "public, must-revalidate, proxy-revalidate, max-age=0"'/>
-            <arg value='--endpoint-url ${env.AWS_S3_BUCKET}'/>
+            <arg line='--endpoint-url ${env.AWS_S3_BUCKET}'/>
 
             <fileset dir=".">
                 <and>
