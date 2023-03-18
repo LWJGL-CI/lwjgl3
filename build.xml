@@ -281,17 +281,17 @@
 
             <srcfile/>
 
-            <arg value="s3://lwjgl-build/ci/"/>
+            <arg value="s3://ci/"/>
             <arg line='--cache-control "public, must-revalidate, proxy-revalidate, max-age=0"'/>
-            <arg line='--endpoint-url https://${env.AWS_S3_BUCKET}'/>
+            <arg value='--endpoint-url ${env.AWS_S3_BUCKET}'/>
 
             <fileset file="templates.jar"/>
         </apply>
     </target>
 
-    <target name="hydrate-kotlinc" description="Downloads the compiled Kotlin templates to build.lwjgl.org" depends="init">
+    <target name="hydrate-kotlinc" description="Downloads the compiled Kotlin templates from B2 bucket" depends="init">
         <!-- Download cache -->
-        <get taskname="Downloading templates.jar" src="https://${env.AWS_S3_BUCKET}/lwjgl-build/ci/templates.jar" dest="."/>
+        <get taskname="Downloading templates.jar" src="${env.AWS_S3_BUCKET}/ci/templates.jar" dest="."/>
         <!-- Validate commit -->
         <local name="Implementation-Version"/>
         <loadproperties taskname="Cache revision">
@@ -1035,9 +1035,9 @@
 
             <srcfile/>
 
-            <arg value="s3://lwjgl-build/${build.type}/${platform.remote}/${build.arch}/"/>
+            <arg value="s3://${build.type}/${platform.remote}/${build.arch}/"/>
             <arg line='--cache-control "public, must-revalidate, proxy-revalidate, max-age=0"'/>
-            <arg line='--endpoint-url https://${env.AWS_S3_BUCKET}'/>
+            <arg value='--endpoint-url ${env.AWS_S3_BUCKET}'/>
 
             <fileset dir=".">
                 <and>
