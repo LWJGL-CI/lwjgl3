@@ -101,7 +101,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ARCH: [arm32, arm64]
+        ARCH: [arm32, arm64, ppc64le]
         include:
           - ARCH: arm32
             PACKAGES: gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf libc6-dev-armhf-cross
@@ -113,6 +113,10 @@ jobs:
             CROSS_ARCH: arm64
             CROSS_PACKAGES: libgtk-3-dev:arm64 libatk-bridge2.0-dev:arm64 libgdk-pixbuf2.0-dev:arm64 libglu-dev:arm64 libgl1-mesa-glx:arm64 libx11-dev:arm64 libxt-dev:arm64 libdbus-1-dev:arm64
             NATIVE_PARAMS: -Dgcc.libpath.opengl=/usr/lib/aarch64-linux-gnu/mesa
+          - ARCH: ppc64le
+            PACKAGES: gcc-powerpc64le-linux-gnu g++-powerpc64le-linux-gnu libc6-dev-ppc64el-cross
+            CROSS_ARCH: ppc64el
+            NATIVE_PARAMS: -Dgcc.libpath.opengl=/usr/lib/powerpc64le-linux-gnu/mesa
     env:
       LWJGL_BUILD_ARCH: ${{matrix.ARCH}}
     steps:
