@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface LLVMOrcMaterializationUnitDestroyFunctionI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        LLVMOrcMaterializationUnitDestroyFunctionI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

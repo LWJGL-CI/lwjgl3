@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface FT_Raster_ResetFuncI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        FT_Raster_ResetFuncI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

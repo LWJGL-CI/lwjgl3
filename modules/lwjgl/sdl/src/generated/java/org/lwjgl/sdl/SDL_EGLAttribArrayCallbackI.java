@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface SDL_EGLAttribArrayCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        SDL_EGLAttribArrayCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_pointer,

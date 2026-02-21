@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface LLVMOrcCAPIDefinitionGeneratorTryToGenerateFunctionI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        LLVMOrcCAPIDefinitionGeneratorTryToGenerateFunctionI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_pointer,

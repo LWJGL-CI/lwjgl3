@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface FMOD_DSP_SYSTEM_MIX_CALLBACKI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        FMOD_DSP_SYSTEM_MIX_CALLBACKI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

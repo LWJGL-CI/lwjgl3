@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface OPReadFuncI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        OPReadFuncI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_sint32,

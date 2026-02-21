@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface RMTInputHandlerI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        RMTInputHandlerI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_pointer,

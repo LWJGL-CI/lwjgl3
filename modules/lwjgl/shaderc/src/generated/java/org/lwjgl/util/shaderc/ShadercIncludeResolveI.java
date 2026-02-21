@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface ShadercIncludeResolveI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        ShadercIncludeResolveI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_pointer,

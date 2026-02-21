@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface CGEventTapCallBackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        CGEventTapCallBackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_pointer,

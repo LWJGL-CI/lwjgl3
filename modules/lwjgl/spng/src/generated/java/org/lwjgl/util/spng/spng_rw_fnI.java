@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface spng_rw_fnI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        spng_rw_fnI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

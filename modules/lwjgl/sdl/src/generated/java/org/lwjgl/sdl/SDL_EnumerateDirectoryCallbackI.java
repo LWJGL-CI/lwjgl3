@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface SDL_EnumerateDirectoryCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        SDL_EnumerateDirectoryCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_uint32,

@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface SVG_Lib_Free_FuncI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        SVG_Lib_Free_FuncI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface SDL_HitTestI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        SDL_HitTestI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_uint32,

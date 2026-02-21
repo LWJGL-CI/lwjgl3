@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface FT_Stream_IoFuncI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        FT_Stream_IoFuncI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_ulong,

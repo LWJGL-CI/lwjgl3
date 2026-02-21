@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface LLVMMustPreserveI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        LLVMMustPreserveI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_uint32,

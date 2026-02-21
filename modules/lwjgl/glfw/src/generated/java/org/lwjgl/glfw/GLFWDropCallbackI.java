@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface GLFWDropCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        GLFWDropCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

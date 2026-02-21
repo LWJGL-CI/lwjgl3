@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface SDL_CleanupPropertyCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        SDL_CleanupPropertyCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

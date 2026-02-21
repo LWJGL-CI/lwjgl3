@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface GLSLIncludeLocalFuncI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        GLSLIncludeLocalFuncI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_pointer,

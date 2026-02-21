@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface SPVMessageConsumerI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        SPVMessageConsumerI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

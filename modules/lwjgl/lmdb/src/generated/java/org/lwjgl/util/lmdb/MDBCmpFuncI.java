@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface MDBCmpFuncI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        MDBCmpFuncI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_sint32,

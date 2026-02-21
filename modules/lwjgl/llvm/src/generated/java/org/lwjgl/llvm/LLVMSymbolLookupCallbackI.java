@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface LLVMSymbolLookupCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        LLVMSymbolLookupCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_pointer,

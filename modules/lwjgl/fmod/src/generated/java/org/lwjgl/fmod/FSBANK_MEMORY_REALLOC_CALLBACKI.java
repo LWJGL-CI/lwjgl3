@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface FSBANK_MEMORY_REALLOC_CALLBACKI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        FSBANK_MEMORY_REALLOC_CALLBACKI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

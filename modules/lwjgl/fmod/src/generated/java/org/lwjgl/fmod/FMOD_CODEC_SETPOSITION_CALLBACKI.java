@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface FMOD_CODEC_SETPOSITION_CALLBACKI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        FMOD_CODEC_SETPOSITION_CALLBACKI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

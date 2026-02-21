@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface ktxVulkanTexture_subAllocatorBindImageFuncPtrI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        ktxVulkanTexture_subAllocatorBindImageFuncPtrI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

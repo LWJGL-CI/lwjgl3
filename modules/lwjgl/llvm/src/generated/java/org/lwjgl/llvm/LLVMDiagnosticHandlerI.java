@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface LLVMDiagnosticHandlerI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        LLVMDiagnosticHandlerI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

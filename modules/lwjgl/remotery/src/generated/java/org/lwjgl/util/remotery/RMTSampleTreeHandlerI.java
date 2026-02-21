@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface RMTSampleTreeHandlerI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        RMTSampleTreeHandlerI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

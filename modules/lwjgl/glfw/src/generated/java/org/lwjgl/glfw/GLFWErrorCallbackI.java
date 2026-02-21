@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface GLFWErrorCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        GLFWErrorCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

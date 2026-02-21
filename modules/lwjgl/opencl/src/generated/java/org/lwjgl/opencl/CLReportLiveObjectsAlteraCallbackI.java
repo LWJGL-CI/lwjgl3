@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface CLReportLiveObjectsAlteraCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        CLReportLiveObjectsAlteraCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

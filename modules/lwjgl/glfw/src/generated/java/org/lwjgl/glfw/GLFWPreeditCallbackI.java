@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface GLFWPreeditCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        GLFWPreeditCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

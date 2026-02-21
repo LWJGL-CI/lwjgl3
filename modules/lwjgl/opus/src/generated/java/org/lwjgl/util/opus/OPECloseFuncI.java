@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface OPECloseFuncI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        OPECloseFuncI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_sint32,

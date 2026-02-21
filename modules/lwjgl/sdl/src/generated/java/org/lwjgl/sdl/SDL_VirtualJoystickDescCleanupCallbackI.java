@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface SDL_VirtualJoystickDescCleanupCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        SDL_VirtualJoystickDescCleanupCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

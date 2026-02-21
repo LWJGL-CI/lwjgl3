@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface VkDeviceMemoryReportCallbackEXTI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        VkDeviceMemoryReportCallbackEXTI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface STBIRKernelCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        STBIRKernelCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_float,

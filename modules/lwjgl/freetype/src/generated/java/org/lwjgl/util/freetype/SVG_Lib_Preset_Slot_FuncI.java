@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface SVG_Lib_Preset_Slot_FuncI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        SVG_Lib_Preset_Slot_FuncI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_sint32,

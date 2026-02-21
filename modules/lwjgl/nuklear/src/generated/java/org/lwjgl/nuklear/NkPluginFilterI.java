@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface NkPluginFilterI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        NkPluginFilterI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_uint8,

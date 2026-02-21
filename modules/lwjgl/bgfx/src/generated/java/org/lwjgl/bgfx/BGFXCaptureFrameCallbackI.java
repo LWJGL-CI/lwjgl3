@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface BGFXCaptureFrameCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        BGFXCaptureFrameCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

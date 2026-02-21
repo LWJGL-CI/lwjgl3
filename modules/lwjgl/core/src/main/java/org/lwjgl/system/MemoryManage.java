@@ -142,7 +142,7 @@ final class MemoryManage {
 
         @FunctionalInterface
         public interface CallbackPP extends CallbackI {
-            Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(MethodHandles.lookup(), apiCreateCIF(ffi_type_pointer, ffi_type_pointer));
+            Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(CallbackPP.class, MethodHandles.lookup(), apiCreateCIF(ffi_type_pointer, ffi_type_pointer));
             @Override default Callback.Descriptor getDescriptor() { return DESCRIPTOR; }
             @Override default void callback(long ret, long args) {
                 long size = memGetAddress(memGetAddress(args));
@@ -153,7 +153,7 @@ final class MemoryManage {
 
         @FunctionalInterface
         public interface CallbackPPP extends CallbackI {
-            Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(MethodHandles.lookup(), apiCreateCIF(ffi_type_pointer, ffi_type_pointer, ffi_type_pointer));
+            Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(CallbackPPP.class, MethodHandles.lookup(), apiCreateCIF(ffi_type_pointer, ffi_type_pointer, ffi_type_pointer));
             @Override default Callback.Descriptor getDescriptor() { return DESCRIPTOR; }
             @Override default void callback(long ret, long args) {
                 long num  = memGetAddress(memGetAddress(args));
@@ -165,7 +165,7 @@ final class MemoryManage {
 
         @FunctionalInterface
         public interface CallbackIV extends CallbackI {
-            Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(MethodHandles.lookup(), apiCreateCIF(ffi_type_void, ffi_type_pointer));
+            Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(CallbackIV.class, MethodHandles.lookup(), apiCreateCIF(ffi_type_void, ffi_type_pointer));
             @Override default Callback.Descriptor getDescriptor() { return DESCRIPTOR; }
             @Override default void callback(long ret, long args) {
                 long ptr = memGetAddress(memGetAddress(args));

@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface FT_Generic_FinalizerI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        FT_Generic_FinalizerI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

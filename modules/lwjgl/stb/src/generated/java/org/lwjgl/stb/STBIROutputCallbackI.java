@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface STBIROutputCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        STBIROutputCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

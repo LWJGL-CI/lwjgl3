@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface SDL_CompareCallback_rI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        SDL_CompareCallback_rI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_sint32,

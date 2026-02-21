@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface VkDebugReportCallbackEXTI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        VkDebugReportCallbackEXTI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

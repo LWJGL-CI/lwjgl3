@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface LLVMMemoryManagerAllocateCodeSectionCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        LLVMMemoryManagerAllocateCodeSectionCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_pointer,

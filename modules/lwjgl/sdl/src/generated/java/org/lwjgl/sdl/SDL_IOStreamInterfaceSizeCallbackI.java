@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface SDL_IOStreamInterfaceSizeCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        SDL_IOStreamInterfaceSizeCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_sint64,

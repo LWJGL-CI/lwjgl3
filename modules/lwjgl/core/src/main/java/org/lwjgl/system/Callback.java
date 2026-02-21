@@ -105,11 +105,14 @@ public abstract class Callback implements Pointer, NativeResource {
     /** An upcall descriptor. [INTERNAL API] */
     public static final class Descriptor {
 
+        final Class<? extends CallbackI> type;
+
         final MethodHandles.Lookup lookup;
 
         final FFICIF cif;
 
-        public Descriptor(MethodHandles.Lookup lookup, FFICIF cif) {
+        public Descriptor(Class<? extends CallbackI> type, MethodHandles.Lookup lookup, FFICIF cif) {
+            this.type = type;
             this.lookup = lookup;
             this.cif = cif;
         }

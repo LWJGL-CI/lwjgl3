@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface MSDFGenFTLoadCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        MSDFGenFTLoadCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_pointer,

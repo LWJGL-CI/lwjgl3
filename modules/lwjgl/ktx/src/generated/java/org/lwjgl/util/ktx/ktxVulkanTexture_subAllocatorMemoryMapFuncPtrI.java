@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface ktxVulkanTexture_subAllocatorMemoryMapFuncPtrI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        ktxVulkanTexture_subAllocatorMemoryMapFuncPtrI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

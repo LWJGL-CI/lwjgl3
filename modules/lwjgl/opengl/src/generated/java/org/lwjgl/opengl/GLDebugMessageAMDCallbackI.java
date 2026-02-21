@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface GLDebugMessageAMDCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        GLDebugMessageAMDCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

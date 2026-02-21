@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface FMOD_CODEC_FILE_SIZE_FUNCI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        FMOD_CODEC_FILE_SIZE_FUNCI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

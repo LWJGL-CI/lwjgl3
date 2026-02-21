@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface GLDebugMessageKHRCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        GLDebugMessageKHRCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

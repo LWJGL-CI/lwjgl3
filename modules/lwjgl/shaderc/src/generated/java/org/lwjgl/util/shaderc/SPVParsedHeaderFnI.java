@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface SPVParsedHeaderFnI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        SPVParsedHeaderFnI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_uint32,

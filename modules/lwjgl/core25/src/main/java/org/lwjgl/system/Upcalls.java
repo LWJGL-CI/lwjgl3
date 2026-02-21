@@ -64,7 +64,14 @@ final class Upcalls {
     }
 
     static long upcallCreate(Callback.Descriptor callbackDescriptor, Object instance) {
-        var binder = getBinder(callbackDescriptor, instance);
+        // mapping from callback interface to upcall binder
+        var binder = BINDER_CACHE
+            .computeIfAbsent(callbackDescriptor.type, it -> {
+                ffmConfig(it, ffmConfigBuilder(callbackDescriptor.lookup)
+                    .build());
+
+                return ffmUpcall(it, callbackDescriptor.cif);
+            });
 
         var descriptor = binder.descriptor();
 
@@ -113,41 +120,6 @@ final class Upcalls {
         if (upcall != null && ARENA_TYPE.isCloseable()) {
             upcall.arena.close();
         }
-    }
-
-    @SuppressWarnings("rawtypes")
-    private static UpcallBinder getBinder(Callback.Descriptor descriptor, Object instance) {
-        // mapping from callback implementation to callback interface
-        var upcallInterface = CALLBACK_INTERFACE_CACHE
-            .computeIfAbsent(instance.getClass(), it -> {
-                out:
-                while (true) {
-                    if (it.isHidden() || !it.isAnonymousClass()) {
-                        for (var iface : it.getInterfaces()) {
-                            if (CallbackI.class.isAssignableFrom(iface)) {
-                                it = iface;
-                                break out;
-                            }
-                        }
-                    }
-                    it = it.getSuperclass();
-                }
-
-                if (!it.isInterface()) {
-                    throw new IllegalStateException("Failed to find upcall interface for " + instance.getClass());
-                }
-
-                return it;
-            });
-
-        // mapping from callback interface to upcall binder
-        return BINDER_CACHE
-            .computeIfAbsent(upcallInterface, it -> {
-                ffmConfig(it, ffmConfigBuilder(descriptor.lookup)
-                    .build());
-
-                return ffmUpcall(it, descriptor.cif);
-            });
     }
 
     // EXCEPTION WRAPPERS

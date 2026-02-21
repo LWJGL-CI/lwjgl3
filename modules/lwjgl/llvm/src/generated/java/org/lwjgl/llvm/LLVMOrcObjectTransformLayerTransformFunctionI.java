@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface LLVMOrcObjectTransformLayerTransformFunctionI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        LLVMOrcObjectTransformLayerTransformFunctionI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_pointer,

@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface YGBaselineFuncI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        YGBaselineFuncI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_float,

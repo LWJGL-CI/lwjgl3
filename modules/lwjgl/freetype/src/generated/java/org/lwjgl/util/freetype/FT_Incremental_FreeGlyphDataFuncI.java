@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface FT_Incremental_FreeGlyphDataFuncI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        FT_Incremental_FreeGlyphDataFuncI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

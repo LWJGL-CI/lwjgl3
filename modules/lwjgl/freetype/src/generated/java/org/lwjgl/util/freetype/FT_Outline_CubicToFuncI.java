@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface FT_Outline_CubicToFuncI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        FT_Outline_CubicToFuncI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_sint32,

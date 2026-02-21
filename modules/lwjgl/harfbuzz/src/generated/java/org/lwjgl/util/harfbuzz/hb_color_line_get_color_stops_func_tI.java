@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface hb_color_line_get_color_stops_func_tI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        hb_color_line_get_color_stops_func_tI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_uint32,

@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface VkInternalAllocationNotificationI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        VkInternalAllocationNotificationI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

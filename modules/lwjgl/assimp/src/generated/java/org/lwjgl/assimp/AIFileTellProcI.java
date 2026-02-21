@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface AIFileTellProcI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        AIFileTellProcI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_pointer,

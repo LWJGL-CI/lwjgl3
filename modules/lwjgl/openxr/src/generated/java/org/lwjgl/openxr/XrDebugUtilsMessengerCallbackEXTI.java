@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface XrDebugUtilsMessengerCallbackEXTI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        XrDebugUtilsMessengerCallbackEXTI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

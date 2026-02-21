@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface hb_font_get_glyph_name_func_tI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        hb_font_get_glyph_name_func_tI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_uint32,

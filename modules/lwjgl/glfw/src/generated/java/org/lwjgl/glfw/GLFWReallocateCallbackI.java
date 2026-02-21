@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface GLFWReallocateCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        GLFWReallocateCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_pointer,

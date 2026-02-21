@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface RPMapFailCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        RPMapFailCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_sint32,

@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface FT_List_IteratorI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        FT_List_IteratorI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_sint32,

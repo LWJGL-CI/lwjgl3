@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface MallocMessageCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        MallocMessageCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

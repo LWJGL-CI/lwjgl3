@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface ktxStream_setposI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        ktxStream_setposI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

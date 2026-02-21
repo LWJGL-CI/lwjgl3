@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface EGLGetBlobFuncANDROIDI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        EGLGetBlobFuncANDROIDI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

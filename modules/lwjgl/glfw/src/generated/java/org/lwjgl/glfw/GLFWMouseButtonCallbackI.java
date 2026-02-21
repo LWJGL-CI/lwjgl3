@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface GLFWMouseButtonCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        GLFWMouseButtonCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

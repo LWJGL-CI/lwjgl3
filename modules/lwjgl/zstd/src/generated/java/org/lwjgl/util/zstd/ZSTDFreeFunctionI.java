@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface ZSTDFreeFunctionI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        ZSTDFreeFunctionI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

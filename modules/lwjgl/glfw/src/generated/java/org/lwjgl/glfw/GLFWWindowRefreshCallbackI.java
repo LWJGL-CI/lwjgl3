@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface GLFWWindowRefreshCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        GLFWWindowRefreshCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,

@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface NkDrawEndCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        NkDrawEndCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_float,

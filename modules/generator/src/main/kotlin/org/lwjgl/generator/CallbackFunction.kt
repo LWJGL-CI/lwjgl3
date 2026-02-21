@@ -185,6 +185,7 @@ import static org.lwjgl.system.MemoryUtil.*;
 ${access.modifier}interface ${className}I extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        ${className}I.class,
         MethodHandles.lookup(),
         apiCreateCIF(${if (callingConvention === CallingConvention.STDCALL) """
             apiStdcall(),""" else ""}

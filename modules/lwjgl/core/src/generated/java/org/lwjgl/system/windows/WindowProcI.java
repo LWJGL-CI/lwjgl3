@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface WindowProcI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        WindowProcI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

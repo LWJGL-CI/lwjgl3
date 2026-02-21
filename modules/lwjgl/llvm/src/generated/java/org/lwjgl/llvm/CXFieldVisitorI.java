@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface CXFieldVisitorI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        CXFieldVisitorI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_uint32,

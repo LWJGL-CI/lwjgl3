@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface CLMemObjectDestructorCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        CLMemObjectDestructorCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

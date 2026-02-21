@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface FTC_Face_RequesterI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        FTC_Face_RequesterI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_sint32,

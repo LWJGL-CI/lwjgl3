@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface CLEventCallbackI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        CLEventCallbackI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

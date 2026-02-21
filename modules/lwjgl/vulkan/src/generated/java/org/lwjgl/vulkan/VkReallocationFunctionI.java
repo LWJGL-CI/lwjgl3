@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface VkReallocationFunctionI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        VkReallocationFunctionI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             apiStdcall(),

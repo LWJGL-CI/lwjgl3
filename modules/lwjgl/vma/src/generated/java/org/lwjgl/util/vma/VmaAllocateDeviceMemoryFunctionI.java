@@ -19,6 +19,7 @@ import static org.lwjgl.system.libffi.LibFFI.*;
 public interface VmaAllocateDeviceMemoryFunctionI extends CallbackI {
 
     Callback.Descriptor DESCRIPTOR = new Callback.Descriptor(
+        VmaAllocateDeviceMemoryFunctionI.class,
         MethodHandles.lookup(),
         apiCreateCIF(
             ffi_type_void,
