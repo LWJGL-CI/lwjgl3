@@ -487,7 +487,7 @@ public final class FFM {
         /**
          * Configures the group pack alignment.
          *
-         * <p>By default there's no packing alignment. This option may be used to configure a pack alignment lesser than than the natural member alignment.</p>
+         * <p>By default there's no packing alignment. This option may be used to configure a pack alignment lesser than the natural member alignment.</p>
          *
          * @param alignment the new pack alignment
          *
@@ -496,6 +496,14 @@ public final class FFM {
         public SELF pack(long alignment) {
             this.packAlignment = alignment;
             return self();
+        }
+        protected MemoryLayout pack(MemoryLayout layout) {
+            var layoutAlignment = layout.byteAlignment();
+            if (packAlignment < layoutAlignment) {
+                return sequenceLayout(layout.byteSize(), ValueLayout.JAVA_BYTE)
+                    .withByteAlignment(packAlignment);
+            }
+            return layout;
         }
 
         /**
@@ -604,15 +612,9 @@ public final class FFM {
 
         @Override
         public StructBinderBuilder<T> m(String name, DataMapping<?> mapping) {
-            var layout = mapping.layout();
+            var layout = pack(mapping.layout());
 
             var layoutAlignment = layout.byteAlignment();
-            if (packAlignment < layoutAlignment) {
-                layoutAlignment = packAlignment;
-                layout = sequenceLayout(layout.byteSize(), ValueLayout.JAVA_BYTE)
-                    .withByteAlignment(packAlignment);
-            }
-
             if (automaticPadding && sizeof % layoutAlignment != 0) {
                 padding(align(sizeof, layoutAlignment) - sizeof);
             }
@@ -643,11 +645,9 @@ public final class FFM {
 
         @Override
         public UnionBinderBuilder<T> m(String name, DataMapping<?> mapping) {
-            var layout = mapping.layout();
+            var layout = pack(mapping.layout());
 
-            var layoutAlignment = min(layout.byteAlignment(), packAlignment);
-
-            alignof = max(alignof, layoutAlignment);
+            alignof = max(alignof, layout.byteAlignment());
             sizeof = max(sizeof, layout.byteSize());
 
             return addMember(name, layout);

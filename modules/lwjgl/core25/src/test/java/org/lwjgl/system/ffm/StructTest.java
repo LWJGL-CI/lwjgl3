@@ -39,6 +39,7 @@ public class StructTest {
         ffmConfig(
             StructTest.class,
             ffmConfigBuilder(MethodHandles.lookup())
+                .withChecks(true)
                 .withNullableAnnotation(MyNullable.class)
                 .build());
     }
@@ -526,6 +527,20 @@ public class StructTest {
             assertEquals(Packed8.$.alignof(), 8L);
             assertEquals(Packed8.$.sizeof(), 40L);
         }
+    }
+
+    public void testLayoutCustomPackAligmentUnion() {
+        interface U {
+            UnionBinder<U> $ = ffmUnion(U.class)
+                .pack(1L)
+                .m("a", int64_t)
+                .m("b", int8_t)
+                .build();
+        }
+
+        assertEquals(U.$.alignof(), 1L);
+        assertEquals(U.$.layout().byteAlignment(), 1L);
+        assertEquals(U.$.sizeof(), 8L);
     }
 
     public void testFFMInterop() {
