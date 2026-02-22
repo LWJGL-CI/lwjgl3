@@ -649,7 +649,6 @@ public class SDLVideo {
         long __functionAddress = Functions.SetWindowFullscreenMode;
         if (CHECKS) {
             check(window);
-            if (mode != NULL) { SDL_DisplayMode.validate(mode); }
         }
         return invokePPZ(window, mode, __functionAddress);
     }

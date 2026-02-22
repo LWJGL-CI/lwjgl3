@@ -1631,7 +1631,7 @@ val SDL_DisplayMode = struct(Module.SDL, "SDL_DisplayMode") {
     float("refresh_rate")
     int("refresh_rate_numerator")
     int("refresh_rate_denominator")
-    SDL_DisplayModeData.p("internal")
+    nullable..SDL_DisplayModeData.p("internal").private()
 }
 
 val SDL_EGLAttribArrayCallback = Module.SDL.callback {
