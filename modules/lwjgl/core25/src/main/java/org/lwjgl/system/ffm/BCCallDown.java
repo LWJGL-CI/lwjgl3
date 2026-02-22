@@ -5,7 +5,6 @@
 package org.lwjgl.system.ffm;
 
 import org.jspecify.annotations.*;
-import org.lwjgl.system.*;
 
 import java.lang.classfile.*;
 import java.lang.constant.*;
@@ -493,7 +492,7 @@ final class BCCallDown extends BCCall {
                                 returnTransform.buildResult(bcb, methodTypeDesc, method);
                             } else if (type == String.class) {
                                 // Native function returns null-terminated string
-                                buildGetString(bcb, method);
+                                buildGetString(bcb, getCharsetType(method));
                             } else if (type == boolean.class) {
                                 var booleanInt = method.getAnnotation(FFMBooleanInt.class);
                                 if (booleanInt != null && !booleanInt.binary()) {
@@ -738,7 +737,7 @@ final class BCCallDown extends BCCall {
         cb
             .aload(allocatorSlot)
             .aload(slot);
-        buildCharsetInstance(cb, getCharset(parameter))
+        buildCharsetInstance(cb, getCharsetType(parameter))
             .invokeinterface(CD_SegmentAllocator, "allocateFrom", MTD_MemorySegment_String_Charset);
         return cb;
     }

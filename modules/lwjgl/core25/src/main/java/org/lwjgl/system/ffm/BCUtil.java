@@ -197,15 +197,15 @@ final class BCUtil {
         return cb;
     }
 
-    static <T extends CodeBuilder> T buildGetString(T cb, Method method) {
+    static <T extends CodeBuilder> T buildGetString(T cb, FFMCharset.Type charsetType) {
         cb.lconst_0();
-        buildCharsetInstance(cb, getCharset(method))
+        buildCharsetInstance(cb, charsetType)
             .invokeinterface(CD_MemorySegment, "getString", MTD_String_long_Charset);
         return cb;
     }
 
-    static <T extends CodeBuilder> T buildCharsetInstance(T cb, FFMCharset.Type type) {
-        cb.getstatic(CD_StandardCharsets, type.charset, CD_Charset);
+    static <T extends CodeBuilder> T buildCharsetInstance(T cb, FFMCharset.Type charsetType) {
+        cb.getstatic(CD_StandardCharsets, charsetType.charset, CD_Charset);
         /*if (STANDARD_CHARSETS.contains(charsetName)) {
             cb.getstatic(CD_StandardCharsets, charsetName, CD_Charset);
         } else {
@@ -244,18 +244,12 @@ final class BCUtil {
         return DynamicConstantDesc.ofNamed(BSM_CLASS_DATA_AT, DEFAULT_NAME, constantType, (Integer)index);
     }
 
-    static FFMCharset.Type getCharset(Method method) {
-        var annotation = method.getAnnotation(FFMCharset.class);
+    static FFMCharset.Type getCharsetType(Method method)       { return getCharsetType(method.getAnnotatedReturnType(), method); }
+    static FFMCharset.Type getCharsetType(Parameter parameter) { return getCharsetType(parameter.getAnnotatedType(), parameter.getDeclaringExecutable()); }
+    static FFMCharset.Type getCharsetType(AnnotatedType annotatedType, Executable executable) {
+        var annotation = annotatedType.getAnnotation(FFMCharset.class);
         if (annotation == null) {
-            annotation = method.getDeclaringClass().getAnnotation(FFMCharset.class);
-        }
-        return annotation != null ? annotation.value() : FFMCharset.DEFAULT;
-    }
-
-    static FFMCharset.Type getCharset(Parameter parameter) {
-        var annotation = parameter.getAnnotation(FFMCharset.class);
-        if (annotation == null) {
-            annotation = parameter.getDeclaringExecutable().getDeclaringClass().getAnnotation(FFMCharset.class);
+            annotation = executable.getDeclaringClass().getAnnotation(FFMCharset.class);
         }
         return annotation != null ? annotation.value() : FFMCharset.DEFAULT;
     }

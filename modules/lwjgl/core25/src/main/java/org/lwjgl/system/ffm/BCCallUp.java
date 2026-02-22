@@ -289,6 +289,7 @@ final class BCCallUp extends BCCall {
                         var slot = cb.parameterSlot(p + paramOffset);
                         if (type == String.class) {
                             cb.aload(slot);
+                            var charsetType = getCharsetType(parameter);
                             if (isNullable(config, parameter)) {
                                 cb
                                     .invokeinterface(CD_MemorySegment, "address", MTD_long)
@@ -296,9 +297,9 @@ final class BCCallUp extends BCCall {
                                     .lcmp()
                                     .ifThenElse(Opcode.IFEQ,
                                         CodeBuilder::aconst_null,
-                                        bcb -> buildGetString(bcb.aload(slot), method));
+                                        bcb -> buildGetString(bcb.aload(slot), charsetType));
                             } else {
-                                buildGetString(cb, method);
+                                buildGetString(cb, charsetType);
                             }
                         } else if (type == boolean.class) {
                             cb.iload(slot);

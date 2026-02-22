@@ -67,7 +67,7 @@ record BCReturnTransform(
                 .aload(allocatorSlot)
                 .loadLocal(kind, slot);
             if (method.getReturnType() == String.class) {
-                buildCharsetShift(cb, getCharset(method), kind);
+                buildCharsetShift(cb, getCharsetType(method), kind);
             }
             if (kind != TypeKind.LONG) {
                 cb.i2l();
@@ -150,7 +150,7 @@ record BCReturnTransform(
                 .lconst_0()
                 .loadLocal(sizeKind, sizeSlot);
 
-            var charsetType = method.getReturnType() == String.class ? getCharset(method) : null;
+            var charsetType = method.getReturnType() == String.class ? getCharsetType(method) : null;
             if (charsetType != null) {
                 buildCharsetShift(bcb, charsetType, sizeKind);
             }

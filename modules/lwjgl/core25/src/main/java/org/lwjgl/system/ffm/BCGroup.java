@@ -197,7 +197,7 @@ final class BCGroup {
                                     default -> throw methodException("Unsupported MemorySegment getter layout: " + memberLayout, method);
                                 }
                             } else if (returnType == String.class) {
-                                var charset = getCharset(method);
+                                var charset = getCharsetType(method);
 
                                 // TODO: try to reuse the implementation of returnType == MemorySegment.class
                                 // TODO: migrate sized toArray to built-in sized getString when supported in future JDK
@@ -440,7 +440,7 @@ final class BCGroup {
                                     throw methodException("Unsupported String setter layout: " + memberLayout, method);
                                 }
 
-                                var charset = getCharset(method);
+                                var charset = getCharsetType(method);
 
                                 buildMemberAddress(cb, thisClass, memberOffset)
                                     .invokestatic(CD_MemorySegment, "ofAddress", MTD_MemorySegment_long, true)
