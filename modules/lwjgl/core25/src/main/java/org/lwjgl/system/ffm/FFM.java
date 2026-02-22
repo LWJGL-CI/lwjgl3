@@ -500,8 +500,7 @@ public final class FFM {
         protected MemoryLayout pack(MemoryLayout layout) {
             var layoutAlignment = layout.byteAlignment();
             if (packAlignment < layoutAlignment) {
-                return sequenceLayout(layout.byteSize(), ValueLayout.JAVA_BYTE)
-                    .withByteAlignment(packAlignment);
+                return layout.withByteAlignment(packAlignment);
             }
             return layout;
         }

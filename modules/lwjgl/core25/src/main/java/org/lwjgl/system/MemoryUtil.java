@@ -2319,6 +2319,16 @@ public final class MemoryUtil {
     */
 
     private static final VarHandle VH_JAVA_BYTE;
+
+    private static final VarHandle VH_JAVA_SHORT_UNALIGNED;
+    private static final VarHandle VH_JAVA_INT_UNALIGNED;
+    private static final VarHandle VH_JAVA_LONG_UNALIGNED;
+    private static final VarHandle VH_JAVA_FLOAT_UNALIGNED;
+    private static final VarHandle VH_JAVA_DOUBLE_UNALIGNED;
+
+    private static final VarHandle VH_CLONG_UNALIGNED;
+    private static final VarHandle VH_ADDRESS_UNALIGNED;
+
     private static final VarHandle VH_JAVA_SHORT;
     private static final VarHandle VH_JAVA_INT;
     private static final VarHandle VH_JAVA_LONG;
@@ -2340,21 +2350,17 @@ public final class MemoryUtil {
 
             VH_JAVA_BYTE = createMemoryAccessVH(ValueLayout.JAVA_BYTE, ofAddress, reinterpret)
                 .withInvokeExactBehavior();
-            VH_JAVA_SHORT = createMemoryAccessVH(DEBUG ? ValueLayout.JAVA_SHORT : ValueLayout.JAVA_SHORT_UNALIGNED, ofAddress, reinterpret)
-                .withInvokeExactBehavior();
-            VH_JAVA_INT = createMemoryAccessVH(DEBUG ? ValueLayout.JAVA_INT : ValueLayout.JAVA_INT_UNALIGNED, ofAddress, reinterpret)
-                .withInvokeExactBehavior();
-            VH_JAVA_LONG = createMemoryAccessVH(DEBUG ? ValueLayout.JAVA_LONG : ValueLayout.JAVA_LONG_UNALIGNED, ofAddress, reinterpret)
-                .withInvokeExactBehavior();
-            VH_JAVA_FLOAT = createMemoryAccessVH(DEBUG ? ValueLayout.JAVA_FLOAT : ValueLayout.JAVA_FLOAT_UNALIGNED, ofAddress, reinterpret)
-                .withInvokeExactBehavior();
-            VH_JAVA_DOUBLE = createMemoryAccessVH(DEBUG ? ValueLayout.JAVA_DOUBLE : ValueLayout.JAVA_DOUBLE_UNALIGNED, ofAddress, reinterpret)
-                .withInvokeExactBehavior();
+
+            VH_JAVA_SHORT_UNALIGNED = createMemoryAccessVH(ValueLayout.JAVA_SHORT_UNALIGNED, ofAddress, reinterpret).withInvokeExactBehavior();
+            VH_JAVA_INT_UNALIGNED = createMemoryAccessVH(ValueLayout.JAVA_INT_UNALIGNED, ofAddress, reinterpret).withInvokeExactBehavior();
+            VH_JAVA_LONG_UNALIGNED = createMemoryAccessVH(ValueLayout.JAVA_LONG_UNALIGNED, ofAddress, reinterpret).withInvokeExactBehavior();
+            VH_JAVA_FLOAT_UNALIGNED = createMemoryAccessVH(ValueLayout.JAVA_FLOAT_UNALIGNED, ofAddress, reinterpret).withInvokeExactBehavior();
+            VH_JAVA_DOUBLE_UNALIGNED = createMemoryAccessVH(ValueLayout.JAVA_DOUBLE_UNALIGNED, ofAddress, reinterpret).withInvokeExactBehavior();
 
             var vh = createMemoryAccessVH(
                 CLONG_SIZE == 8
-                    ? (DEBUG ? ValueLayout.JAVA_LONG : ValueLayout.JAVA_LONG_UNALIGNED)
-                    : (DEBUG ? ValueLayout.JAVA_INT : ValueLayout.JAVA_INT_UNALIGNED), ofAddress, reinterpret);
+                    ? (ValueLayout.JAVA_LONG_UNALIGNED)
+                    : (ValueLayout.JAVA_INT_UNALIGNED), ofAddress, reinterpret);
 
             if (CLONG_SIZE == 4) {
                 vh = MethodHandles.filterValue(vh,
@@ -2369,11 +2375,11 @@ public final class MemoryUtil {
                 );
             }
 
-            VH_CLONG = vh.withInvokeExactBehavior();
+            VH_CLONG_UNALIGNED = vh.withInvokeExactBehavior();
 
             vh = createMemoryAccessVH(BITS64
-                ? (DEBUG ? ValueLayout.JAVA_LONG : ValueLayout.JAVA_LONG_UNALIGNED)
-                : (DEBUG ? ValueLayout.JAVA_INT : ValueLayout.JAVA_INT_UNALIGNED), ofAddress, reinterpret);
+                ? (ValueLayout.JAVA_LONG_UNALIGNED)
+                : (ValueLayout.JAVA_INT_UNALIGNED), ofAddress, reinterpret);
 
             if (BITS32) {
                 vh = MethodHandles.filterValue(vh,
@@ -2388,7 +2394,64 @@ public final class MemoryUtil {
                 );
             }
 
-            VH_ADDRESS = vh.withInvokeExactBehavior();
+            VH_ADDRESS_UNALIGNED = vh.withInvokeExactBehavior();
+
+            if (DEBUG) {
+                VH_JAVA_SHORT = createMemoryAccessVH(ValueLayout.JAVA_SHORT, ofAddress, reinterpret).withInvokeExactBehavior();
+                VH_JAVA_INT = createMemoryAccessVH(ValueLayout.JAVA_INT, ofAddress, reinterpret).withInvokeExactBehavior();
+                VH_JAVA_LONG = createMemoryAccessVH(ValueLayout.JAVA_LONG, ofAddress, reinterpret).withInvokeExactBehavior();
+                VH_JAVA_FLOAT = createMemoryAccessVH(ValueLayout.JAVA_FLOAT, ofAddress, reinterpret).withInvokeExactBehavior();
+                VH_JAVA_DOUBLE = createMemoryAccessVH(ValueLayout.JAVA_DOUBLE, ofAddress, reinterpret).withInvokeExactBehavior();
+
+                vh = createMemoryAccessVH(
+                    CLONG_SIZE == 8
+                        ? ValueLayout.JAVA_LONG
+                        : ValueLayout.JAVA_INT, ofAddress, reinterpret);
+
+                if (CLONG_SIZE == 4) {
+                    vh = MethodHandles.filterValue(vh,
+                        MethodHandles.explicitCastArguments(
+                            MethodHandles.identity(int.class),
+                            MethodType.methodType(int.class, long.class)
+                        ),
+                        MethodHandles.explicitCastArguments(
+                            MethodHandles.identity(long.class),
+                            MethodType.methodType(long.class, int.class)
+                        )
+                    );
+                }
+
+                VH_CLONG = vh.withInvokeExactBehavior();
+
+                vh = createMemoryAccessVH(BITS64
+                    ? ValueLayout.JAVA_LONG
+                    : ValueLayout.JAVA_INT, ofAddress, reinterpret);
+
+                if (BITS32) {
+                    vh = MethodHandles.filterValue(vh,
+                        MethodHandles.explicitCastArguments(
+                            MethodHandles.identity(int.class),
+                            MethodType.methodType(int.class, long.class)
+                        ),
+                        lookup.findStatic(
+                            MemoryUtil.class, "castAddress32",
+                            MethodType.methodType(long.class, int.class)
+                        )
+                    );
+                }
+
+                VH_ADDRESS = vh.withInvokeExactBehavior();
+            } else {
+                VH_JAVA_SHORT = VH_JAVA_SHORT_UNALIGNED;
+                VH_JAVA_INT = VH_JAVA_INT_UNALIGNED;
+                VH_JAVA_LONG = VH_JAVA_LONG_UNALIGNED;
+                VH_JAVA_FLOAT = VH_JAVA_FLOAT_UNALIGNED;
+                VH_JAVA_DOUBLE = VH_JAVA_DOUBLE_UNALIGNED;
+
+                VH_CLONG = VH_CLONG_UNALIGNED;
+
+                VH_ADDRESS = VH_ADDRESS_UNALIGNED;
+            }
         } catch (NoSuchMethodException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -2454,6 +2517,52 @@ public final class MemoryUtil {
             memPutLong(ptr, value);
         } else {
             memPutInt(ptr, (int)value);
+        }*/
+    }
+
+    // Used internally for packed struct member access
+
+    public static short memGetShortUnaligned(long ptr)               { return (short)VH_JAVA_SHORT_UNALIGNED.get(ptr); }
+    public static int memGetIntUnaligned(long ptr)                   { return (int)VH_JAVA_INT_UNALIGNED.get(ptr); }
+    public static long memGetLongUnaligned(long ptr)                 { return (long)VH_JAVA_LONG_UNALIGNED.get(ptr); }
+    public static float memGetFloatUnaligned(long ptr)               { return (float)VH_JAVA_FLOAT_UNALIGNED.get(ptr); }
+    public static double memGetDoubleUnaligned(long ptr)             { return (double)VH_JAVA_DOUBLE_UNALIGNED.get(ptr); }
+
+    public static void memPutShortUnaligned(long ptr, short value)   { VH_JAVA_SHORT_UNALIGNED.set(ptr, value); }
+    public static void memPutIntUnaligned(long ptr, int value)       { VH_JAVA_INT_UNALIGNED.set(ptr, value); }
+    public static void memPutLongUnaligned(long ptr, long value)     { VH_JAVA_LONG_UNALIGNED.set(ptr, value); }
+    public static void memPutFloatUnaligned(long ptr, float value)   { VH_JAVA_FLOAT_UNALIGNED.set(ptr, value); }
+    public static void memPutDoubleUnaligned(long ptr, double value) { VH_JAVA_DOUBLE_UNALIGNED.set(ptr, value); }
+
+    public static long memGetCLongUnaligned(long ptr) {
+        return (long)VH_CLONG_UNALIGNED.get(ptr);
+        /*return CLONG_SIZE == 8
+            ? memGetLongUnaligned(ptr)
+            : memGetIntUnaligned(ptr);*/
+    }
+
+    public static long memGetAddressUnaligned(long ptr) {
+        return (long)VH_ADDRESS_UNALIGNED.get(ptr);
+        /*return BITS64
+            ? memGetLongUnaligned(ptr)
+            : memGetIntUnaligned(ptr) & 0xFFFF_FFFFL;*/
+    }
+
+    public static void memPutCLongUnaligned(long ptr, long value) {
+        VH_CLONG_UNALIGNED.set(ptr, value);
+        /*if (CLONG_SIZE == 8) {
+            memPutLongUnaligned(ptr, value);
+        } else {
+            memPutIntUnaligned(ptr, (int)value);
+        }*/
+    }
+
+    public static void memPutAddressUnaligned(long ptr, long value) {
+        VH_ADDRESS_UNALIGNED.set(ptr, value);
+        /*if (BITS64) {
+            memPutLongUnaligned(ptr, value);
+        } else {
+            memPutIntUnaligned(ptr, (int)value);
         }*/
     }
 
