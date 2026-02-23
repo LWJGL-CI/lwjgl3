@@ -13,7 +13,7 @@ public @interface FFMBooleanInt {
     /**
      * The return or parameter carrier type.
      *
-     * <p>If not specified, defaults to {@link SizeCarrier#INT}.</p>
+     * <p>Must be either {@link SizeCarrier#INT} or {@link SizeCarrier#SHORT}. If not specified, defaults to {@code SizeCarrier.INT}.</p>
      */
     SizeCarrier value() default SizeCarrier.INT;
     /**

@@ -4,8 +4,6 @@
  */
 package org.lwjgl.system.ffm;
 
-import org.lwjgl.system.*;
-
 import java.lang.classfile.*;
 import java.lang.constant.*;
 import java.lang.foreign.*;
@@ -70,6 +68,10 @@ abstract sealed class BCCall
         } else if (type == boolean.class) {
             var booleanInt = element.getAnnotation(FFMBooleanInt.class);
             if (booleanInt != null) {
+                var carrier = booleanInt.value();
+                if (!(carrier == SizeCarrier.INT || carrier == SizeCarrier.SHORT)) {
+                    throw new IllegalStateException("FFMBooleanInt supports SHORT and INT carriers only");
+                }
                 return booleanInt.value().layout;
             }
             return ValueLayout.JAVA_BOOLEAN;

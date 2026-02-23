@@ -85,8 +85,6 @@ final class BCCallUp extends BCCall {
                 var booleanInt = parameter.getAnnotation(FFMBooleanInt.class);
                 if (booleanInt != null) {
                     featureFlags |= FF_TYPE_CONVERSION.mask;
-                    argLayouts.add(booleanInt.value().layout);
-                    continue;
                 } else if (cif != null) {
                     // LWJGL 3 interop
                     var layout = memoryLayoutFrom(FFIType.create(cif.arg_types().get(i)));
@@ -106,8 +104,8 @@ final class BCCallUp extends BCCall {
                 if (i == parameters.length - 1 && method.getReturnType() == void.class && cif.rtype().type() == FFI_TYPE_STRUCT) {
                     featureFlags |= FF_RETURNS_STRUCT_BY_VALUE;
                 } else {
-                    argLayouts.add(memoryLayoutFrom(FFIType.create(cif.arg_types().get(i))));
                     featureFlags |= FF_ACCEPTS_STRUCT_BY_VALUE;
+                    argLayouts.add(memoryLayoutFrom(FFIType.create(cif.arg_types().get(i))));
                 }
                 continue;
             }
@@ -124,10 +122,11 @@ final class BCCallUp extends BCCall {
             } else if (type == boolean.class) {
                 if (method.isAnnotationPresent(FFMBooleanInt.class)) {
                     featureFlags |= FF_TYPE_CONVERSION.mask;
+                    resLayout = valueLayout(method, type);
                 } else if (cif != null) {
                     // LWJGL 3 interop
-                    resLayout = memoryLayoutFrom(cif.rtype());
                     featureFlags |= FF_TYPE_CONVERSION.mask;
+                    resLayout = memoryLayoutFrom(cif.rtype());
                 }
             } else if (BITS32 && type == long.class && method.isAnnotationPresent(FFMPointer.class)) {
                 featureFlags |= FF_TYPE_CONVERSION.mask;
@@ -149,7 +148,7 @@ final class BCCallUp extends BCCall {
                     resLayout = ValueLayout.ADDRESS.withTargetLayout(groupLayout);
                 }
             } else {
-                resLayout = valueLayout(method, method.getReturnType());
+                resLayout = valueLayout(method, type);
             }
         } else if ((featureFlags & FF_RETURNS_STRUCT_BY_VALUE) != 0) {
             // LWJGL 3 interop
