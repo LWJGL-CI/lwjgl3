@@ -141,6 +141,9 @@ public final class FFM {
 
             for (var m = 0; m < methods.length; m++) {
                 var method = methods[m];
+                if (method.isDefault() || Modifier.isStatic(method.getModifiers())) {
+                    continue;
+                }
 
                 var methodTypeDesc = getMethodTypeDesc(method);
 
