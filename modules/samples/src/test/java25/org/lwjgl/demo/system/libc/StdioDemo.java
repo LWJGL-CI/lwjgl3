@@ -38,7 +38,11 @@ public final class StdioDemo {
         int fprintf(@FFMPointer long stream, String format);
         int fprintf(@FFMPointer long stream, String format, @FFMFirstVariadicArg int x, int y, double z, String text);
 
+        // Simple version
         int snprintf(MemorySegment buffer, long size, String format, @FFMFirstVariadicArg int x, int y, double z, String text);
+        // Tests @FFMFirstVariadicArg implementation with additional virtual parameters
+        @FFMFunctionAddress
+        int snprintf(MemorySegment address, SegmentAllocator allocator, MemorySegment buffer, long size, String format, @FFMFirstVariadicArg int x, int y, double z, String text);
     }
 
     private static final MyStdio stdio = ffmGenerate(MyStdio.class);
@@ -67,12 +71,26 @@ public final class StdioDemo {
             check(stdio.fprintf(stdout, "Hello %d|%d|%g world and your word: %0s!\n", 42, 7, 3.14, word));
             check(fflush(stdout));
 
-            check(stdio.snprintf(output, output.byteSize(), "Hello %d|%d|%g world and your word: %0s!\n", 42, 7, 3.14, word));
+            {
+                var expected = "Hello " + 42 + "|" + 7 + "|" + 3.14 + " world and your word: " + word + "!\n";
 
-            assertEquals(
-                output.getString(0L, StandardCharsets.UTF_8),
-                "Hello " + 42 + "|" + 7 + "|" + 3.14 + " world and your word: " + word + "!\n"
-            );
+                check(stdio.snprintf(
+                    output, output.byteSize(),
+                    "Hello %d|%d|%g world and your word: %0s!\n",
+                    42, 7, 3.14, word
+                ));
+                assertEquals(output.getString(0L, StandardCharsets.UTF_8), expected);
+
+                output.fill((byte)0);
+
+                check(stdio.snprintf(
+                    MemorySegment.ofAddress(snprintf), arena,
+                    output, output.byteSize(),
+                    "Hello %d|%d|%g world and your word: %0s!\n",
+                    42, 7, 3.14, word
+                ));
+                assertEquals(output.getString(0L, StandardCharsets.UTF_8), expected);
+            }
         }
     }
 

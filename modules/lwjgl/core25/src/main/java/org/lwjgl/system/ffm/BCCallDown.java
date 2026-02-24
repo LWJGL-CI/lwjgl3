@@ -63,9 +63,7 @@ final class BCCallDown extends BCCall {
         Class<?> allocatorClass = null;
 
         Linker.Option captureCallState = null;
-        var firstVariadicArg = method.isAnnotationPresent(FFMFirstVariadicArg.class)
-            ? Linker.Option.firstVariadicArg(method.getAnnotation(FFMFirstVariadicArg.class).value())
-            : null;
+        var firstVariadicArg = getFirstVariadicArgOption();
 
         var hasTracing   = config.traceConsumer != null && (config.tracingFilter == null || config.tracingFilter.test(method));
         var featureFlags = hasTracing ? FF_TRACING.mask : 0;
@@ -106,7 +104,7 @@ final class BCCallDown extends BCCall {
                 if (firstVariadicArg != null) {
                     throw new IllegalStateException("Multiple FFMFirstVariadicArg annotations found.");
                 }
-                firstVariadicArg = Linker.Option.firstVariadicArg(i);
+                firstVariadicArg = Linker.Option.firstVariadicArg(argLayouts.size());
             }
 
             if (SegmentAllocator.class.isAssignableFrom(parameter.getType())) {
@@ -228,6 +226,13 @@ final class BCCallDown extends BCCall {
         return
             method.getAnnotation(FFMFunctionAddress.class) != null ||
             method.getDeclaringClass().getAnnotation(FFMFunctionAddress.class) != null;
+    }
+
+    private Linker.@Nullable Option getFirstVariadicArgOption() {
+        var annotation = method.getAnnotation(FFMFirstVariadicArg.class);
+        return annotation != null
+            ? Linker.Option.firstVariadicArg(annotation.value())
+            : null;
     }
 
     private boolean hasJNI() {
