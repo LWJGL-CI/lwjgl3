@@ -216,31 +216,23 @@ public final class FFM {
     }
 
     static FFMConfig.BinderField lookupBinder(FFMConfig config, Class<?> targetType) {
-        var binderField = config.binders.get(targetType);
-        if (binderField == null) {
-            binderField = lookupBinderCacheMiss(config, targetType);
-        }
-        return binderField;
-    }
+        return config.binders.computeIfAbsent(targetType, it -> {
+            var field = findBinderField(it);
 
-    private static FFMConfig.BinderField lookupBinderCacheMiss(FFMConfig config, Class<?> targetType) {
-        var field = findBinderField(targetType);
+            Binder<?> binder;
 
-        Binder<?> binder;
+            try {
+                binder = (Binder<?>)field.get(null);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
 
-        try {
-            binder = (Binder<?>)field.get(null);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+            if (binder == null) {
+                throw new IllegalStateException("Missing binder field value for " + it);
+            }
 
-        if (binder == null) {
-            throw new IllegalStateException("Missing binder field value for " + targetType);
-        }
-
-        var binderField = new FFMConfig.BinderField(field.getName(), binder);
-        config.binders.put(targetType, binderField);
-        return binderField;
+            return new FFMConfig.BinderField(field.getName(), binder);
+        });
     }
 
     // PUBLIC API (DSL)

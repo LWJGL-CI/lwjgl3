@@ -11,6 +11,7 @@ import java.lang.foreign.*;
 import java.lang.invoke.*;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.function.*;
 
 /**
@@ -27,7 +28,7 @@ public final class FFMConfig {
         Binder<?> binder
     ) { }
 
-    final HashMap<Class<?>, BinderField> binders = new HashMap<>();
+    final ConcurrentHashMap<Class<?>, BinderField> binders = new ConcurrentHashMap<>();
 
     final @Nullable Class<? extends Annotation>
                                               nullableAnnotation;
