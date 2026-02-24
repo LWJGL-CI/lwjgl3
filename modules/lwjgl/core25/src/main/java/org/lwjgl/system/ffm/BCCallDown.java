@@ -82,7 +82,7 @@ final class BCCallDown extends BCCall {
             if (parameter.getType() == MemorySegment.class) {
                 if (i == 0 && hasFunctionAddress) {
                     if (DEBUG && Arrays.stream(parameter.getAnnotations()).anyMatch(it -> "org.lwjgl.system.ffm".equals(it.annotationType().getPackage().getName()))) {
-                        throw new IllegalStateException("FFMFunctionAddress parameters cannot have FFM annotations.");
+                        throw new IllegalStateException("FFMFunctionAddress parameters cannot have FFM annotations");
                     }
                     continue;
                 }
@@ -90,26 +90,26 @@ final class BCCallDown extends BCCall {
                 var ccs = parameter.getAnnotation(FFMCaptureCallState.class);
                 if (ccs != null) {
                     if (i != (hasFunctionAddress ? 1 : 0) + (allocatorClass != null ? 1 : 0)) {
-                        throw new IllegalStateException("Invalid position of FFMCaptureCallState parameter.");
+                        throw new IllegalStateException("Invalid position of FFMCaptureCallState parameter");
                     }
 
                     captureCallState = Linker.Option.captureCallState(ccs.value());
                     continue;
                 }
             } else if (i == 0 && hasFunctionAddress) {
-                throw new IllegalStateException("Missing FFMFunctionAddress parameter.");
+                throw new IllegalStateException("Missing FFMFunctionAddress parameter");
             }
 
             if (parameter.isAnnotationPresent(FFMFirstVariadicArg.class)) {
                 if (firstVariadicArg != null) {
-                    throw new IllegalStateException("Multiple FFMFirstVariadicArg annotations found.");
+                    throw new IllegalStateException("Multiple FFMFirstVariadicArg annotations found");
                 }
                 firstVariadicArg = Linker.Option.firstVariadicArg(argLayouts.size());
             }
 
             if (SegmentAllocator.class.isAssignableFrom(parameter.getType())) {
                 if (i != (hasFunctionAddress ? 1 : 0)) {
-                    throw new IllegalStateException("Invalid position of SegmentAllocator/Arena parameter.");
+                    throw new IllegalStateException("Invalid position of SegmentAllocator/Arena parameter");
                 }
                 allocatorClass = parameter.getType();
                 // TODO: if a struct is returned or passed by-value?
@@ -177,11 +177,13 @@ final class BCCallDown extends BCCall {
             if (returnAnnotation != null) {
                 var returnOutputAnnotation = method.getAnnotation(FFMReturn.SizeOut.class);
 
-                // TODO: protect against multiple Size annotations
                 // TODO: validate Size parameter type
                 if (returnOutputAnnotation == null) {
                     for (var parameter : parameters) {
                         if (parameter.isAnnotationPresent(FFMReturn.Size.class)) {
+                            if (resLayout != null) {
+                                throw new IllegalStateException("Multiple @FFMReturn.Size annotations found");
+                            }
                             resLayout = valueLayout(parameter);
                         }
                     }
@@ -715,7 +717,7 @@ final class BCCallDown extends BCCall {
         if (!hasFunctionAddress) {
             var lookup = config.symbolLookup;
             if (lookup == null) {
-                throw new IllegalStateException("The registered FFMConfig does not define a SymbolLookup.");
+                throw new IllegalStateException("The registered FFMConfig does not define a SymbolLookup");
             }
             list.add(lookup
                 .find(nativeName)
