@@ -252,7 +252,7 @@ val bgfx_caps_t = struct(Module.BGFX, "BGFXCaps", nativeName = "bgfx_caps_t", mu
     bgfx_caps_gpu_t("gpu")[4]
     bgfx_caps_limits_t("limits")
 
-    uint16_t("formats")["BGFX_TEXTURE_FORMAT_COUNT"]
+    uint32_t("formats")["BGFX_TEXTURE_FORMAT_COUNT"]
 }
 
 // Callback interface
@@ -349,6 +349,7 @@ val bgfx_callback_vtbl_t = struct(Module.BGFX, "BGFXCallbackVtbl", nativeName = 
             uint32_t("_width"),
             uint32_t("_height"),
             uint32_t("_pitch"),
+            bgfx_texture_format_t("_format"),
             void.const.p("_data"),
             uint32_t("_size"),
             bool("_yflip")
@@ -433,6 +434,7 @@ val bgfx_platform_data_t = struct(Module.BGFX, "BGFXPlatformData", nativeName = 
     nullable..opaque_p("ndt")
     nullable..opaque_p("nwh")
     nullable..opaque_p("context")
+    nullable..opaque_p("queue")
     nullable..opaque_p("backBuffer")
     nullable..opaque_p("backBufferDS")
     bgfx_native_window_handle_type_t("type")

@@ -235,7 +235,7 @@ public class BGFX {
         return BGFX;
     }
 
-    public static final int BGFX_API_VERSION = 136;
+    public static final int BGFX_API_VERSION = 140;
 
     public static final short BGFX_INVALID_HANDLE = (short)0xFFFF;
 
@@ -447,18 +447,19 @@ public class BGFX {
         BGFX_BUFFER_COMPUTE_TYPE_MASK    = 0x30;
 
     public static final long
-        BGFX_TEXTURE_NONE          = 0x0L,
-        BGFX_TEXTURE_MSAA_SAMPLE   = 0x800000000L,
-        BGFX_TEXTURE_RT            = 0x1000000000L,
-        BGFX_TEXTURE_RT_MSAA_X2    = 0x2000000000L,
-        BGFX_TEXTURE_RT_MSAA_X4    = 0x3000000000L,
-        BGFX_TEXTURE_RT_MSAA_X8    = 0x4000000000L,
-        BGFX_TEXTURE_RT_MSAA_X16   = 0x5000000000L,
-        BGFX_TEXTURE_RT_WRITE_ONLY = 0x8000000000L,
-        BGFX_TEXTURE_COMPUTE_WRITE = 0x100000000000L,
-        BGFX_TEXTURE_SRGB          = 0x200000000000L,
-        BGFX_TEXTURE_BLIT_DST      = 0x400000000000L,
-        BGFX_TEXTURE_READ_BACK     = 0x800000000000L;
+        BGFX_TEXTURE_NONE            = 0x0L,
+        BGFX_TEXTURE_MSAA_SAMPLE     = 0x800000000L,
+        BGFX_TEXTURE_RT              = 0x1000000000L,
+        BGFX_TEXTURE_RT_MSAA_X2      = 0x2000000000L,
+        BGFX_TEXTURE_RT_MSAA_X4      = 0x3000000000L,
+        BGFX_TEXTURE_RT_MSAA_X8      = 0x4000000000L,
+        BGFX_TEXTURE_RT_MSAA_X16     = 0x5000000000L,
+        BGFX_TEXTURE_RT_WRITE_ONLY   = 0x8000000000L,
+        BGFX_TEXTURE_COMPUTE_WRITE   = 0x100000000000L,
+        BGFX_TEXTURE_SRGB            = 0x200000000000L,
+        BGFX_TEXTURE_BLIT_DST        = 0x400000000000L,
+        BGFX_TEXTURE_READ_BACK       = 0x800000000000L,
+        BGFX_TEXTURE_EXTERNAL_SHARED = 0x1000000000000L;
 
     public static final int BGFX_TEXTURE_RT_MSAA_SHIFT = 36;
 
@@ -576,15 +577,17 @@ public class BGFX {
         BGFX_CAPS_TEXTURE_COMPARE_RESERVED = 0x100000L,
         BGFX_CAPS_TEXTURE_CUBE_ARRAY       = 0x200000L,
         BGFX_CAPS_TEXTURE_DIRECT_ACCESS    = 0x400000L,
-        BGFX_CAPS_TEXTURE_READ_BACK        = 0x800000L,
-        BGFX_CAPS_TEXTURE_2D_ARRAY         = 0x1000000L,
-        BGFX_CAPS_TEXTURE_3D               = 0x2000000L,
-        BGFX_CAPS_TRANSPARENT_BACKBUFFER   = 0x4000000L,
-        BGFX_CAPS_VARIABLE_RATE_SHADING    = 0x8000000L,
-        BGFX_CAPS_VERTEX_ATTRIB_HALF       = 0x10000000L,
-        BGFX_CAPS_VERTEX_ATTRIB_UINT10     = 0x20000000L,
-        BGFX_CAPS_VERTEX_ID                = 0x40000000L,
-        BGFX_CAPS_VIEWPORT_LAYER_ARRAY     = 0x80000000L,
+        BGFX_CAPS_TEXTURE_EXTERNAL         = 0x800000L,
+        BGFX_CAPS_TEXTURE_EXTERNAL_SHARED  = 0x1000000L,
+        BGFX_CAPS_TEXTURE_READ_BACK        = 0x2000000L,
+        BGFX_CAPS_TEXTURE_2D_ARRAY         = 0x4000000L,
+        BGFX_CAPS_TEXTURE_3D               = 0x8000000L,
+        BGFX_CAPS_TRANSPARENT_BACKBUFFER   = 0x10000000L,
+        BGFX_CAPS_VARIABLE_RATE_SHADING    = 0x20000000L,
+        BGFX_CAPS_VERTEX_ATTRIB_HALF       = 0x40000000L,
+        BGFX_CAPS_VERTEX_ATTRIB_UINT10     = 0x80000000L,
+        BGFX_CAPS_VERTEX_ID                = 0x100000000L,
+        BGFX_CAPS_VIEWPORT_LAYER_ARRAY     = 0x200000000L,
         BGFX_CAPS_TEXTURE_COMPARE_ALL      = BGFX_CAPS_TEXTURE_COMPARE_RESERVED | BGFX_CAPS_TEXTURE_COMPARE_LEQUAL;
 
     public static final int
@@ -604,7 +607,8 @@ public class BGFX {
         BGFX_CAPS_FORMAT_TEXTURE_FRAMEBUFFER      = 0x1000,
         BGFX_CAPS_FORMAT_TEXTURE_FRAMEBUFFER_MSAA = 0x2000,
         BGFX_CAPS_FORMAT_TEXTURE_MSAA             = 0x4000,
-        BGFX_CAPS_FORMAT_TEXTURE_MIP_AUTOGEN      = 0x8000;
+        BGFX_CAPS_FORMAT_TEXTURE_MIP_AUTOGEN      = 0x8000,
+        BGFX_CAPS_FORMAT_TEXTURE_BACKBUFFER       = 0x10000;
 
     public static final byte
         BGFX_RESOLVE_NONE          = 0x0,
@@ -627,6 +631,11 @@ public class BGFX {
         BGFX_CUBE_MAP_NEGATIVE_Y = 0x3,
         BGFX_CUBE_MAP_POSITIVE_Z = 0x4,
         BGFX_CUBE_MAP_NEGATIVE_Z = 0x5;
+
+    public static final byte
+        BGFX_FRAME_NONE          = 0x0,
+        BGFX_FRAME_DEBUG_CAPTURE = 0x1,
+        BGFX_FRAME_DISCARD       = 0x2;
 
     public static final int
         BGFX_FATAL_DEBUG_CHECK              = 0,
@@ -1239,11 +1248,16 @@ public class BGFX {
 
     // --- [ bgfx_frame ] ---
 
-    /** {@code uint32_t bgfx_frame(bool _capture)} */
-    @NativeType("uint32_t")
-    public static int bgfx_frame(@NativeType("bool") boolean _capture) {
+    /** {@code uint32_t bgfx_frame(uint8_t _flags)} */
+    public static int nbgfx_frame(byte _flags) {
         long __functionAddress = Functions.frame;
-        return invokeI(_capture, __functionAddress);
+        return invokeUI(_flags, __functionAddress);
+    }
+
+    /** {@code uint32_t bgfx_frame(uint8_t _flags)} */
+    @NativeType("uint32_t")
+    public static int bgfx_frame(@NativeType("uint8_t") int _flags) {
+        return nbgfx_frame((byte)_flags);
     }
 
     // --- [ bgfx_get_renderer_type ] ---
@@ -2056,19 +2070,19 @@ public class BGFX {
 
     // --- [ bgfx_create_texture_2d ] ---
 
-    /** {@code bgfx_texture_handle_t bgfx_create_texture_2d(uint16_t _width, uint16_t _height, bool _hasMips, uint16_t _numLayers, bgfx_texture_format_t _format, uint64_t _flags, bgfx_memory_t const * _mem)} */
-    public static short nbgfx_create_texture_2d(short _width, short _height, boolean _hasMips, short _numLayers, int _format, long _flags, long _mem) {
+    /** {@code bgfx_texture_handle_t bgfx_create_texture_2d(uint16_t _width, uint16_t _height, bool _hasMips, uint16_t _numLayers, bgfx_texture_format_t _format, uint64_t _flags, bgfx_memory_t const * _mem, uint64_t _external)} */
+    public static short nbgfx_create_texture_2d(short _width, short _height, boolean _hasMips, short _numLayers, int _format, long _flags, long _mem, long _external) {
         long __functionAddress = Functions.create_texture_2d;
         if (CHECKS) {
             if (_mem != NULL) { BGFXMemory.validate(_mem); }
         }
-        return invokeCCCJPC(_width, _height, _hasMips, _numLayers, _format, _flags, _mem, __functionAddress);
+        return invokeCCCJPJC(_width, _height, _hasMips, _numLayers, _format, _flags, _mem, _external, __functionAddress);
     }
 
-    /** {@code bgfx_texture_handle_t bgfx_create_texture_2d(uint16_t _width, uint16_t _height, bool _hasMips, uint16_t _numLayers, bgfx_texture_format_t _format, uint64_t _flags, bgfx_memory_t const * _mem)} */
+    /** {@code bgfx_texture_handle_t bgfx_create_texture_2d(uint16_t _width, uint16_t _height, bool _hasMips, uint16_t _numLayers, bgfx_texture_format_t _format, uint64_t _flags, bgfx_memory_t const * _mem, uint64_t _external)} */
     @NativeType("bgfx_texture_handle_t")
-    public static short bgfx_create_texture_2d(@NativeType("uint16_t") int _width, @NativeType("uint16_t") int _height, @NativeType("bool") boolean _hasMips, @NativeType("uint16_t") int _numLayers, @NativeType("bgfx_texture_format_t") int _format, @NativeType("uint64_t") long _flags, @NativeType("bgfx_memory_t const *") @Nullable BGFXMemory _mem) {
-        return nbgfx_create_texture_2d((short)_width, (short)_height, _hasMips, (short)_numLayers, _format, _flags, memAddressSafe(_mem));
+    public static short bgfx_create_texture_2d(@NativeType("uint16_t") int _width, @NativeType("uint16_t") int _height, @NativeType("bool") boolean _hasMips, @NativeType("uint16_t") int _numLayers, @NativeType("bgfx_texture_format_t") int _format, @NativeType("uint64_t") long _flags, @NativeType("bgfx_memory_t const *") @Nullable BGFXMemory _mem, @NativeType("uint64_t") long _external) {
+        return nbgfx_create_texture_2d((short)_width, (short)_height, _hasMips, (short)_numLayers, _format, _flags, memAddressSafe(_mem), _external);
     }
 
     // --- [ bgfx_create_texture_2d_scaled ] ---
@@ -2087,36 +2101,36 @@ public class BGFX {
 
     // --- [ bgfx_create_texture_3d ] ---
 
-    /** {@code bgfx_texture_handle_t bgfx_create_texture_3d(uint16_t _width, uint16_t _height, uint16_t _depth, bool _hasMips, bgfx_texture_format_t _format, uint64_t _flags, bgfx_memory_t const * _mem)} */
-    public static short nbgfx_create_texture_3d(short _width, short _height, short _depth, boolean _hasMips, int _format, long _flags, long _mem) {
+    /** {@code bgfx_texture_handle_t bgfx_create_texture_3d(uint16_t _width, uint16_t _height, uint16_t _depth, bool _hasMips, bgfx_texture_format_t _format, uint64_t _flags, bgfx_memory_t const * _mem, uint64_t _external)} */
+    public static short nbgfx_create_texture_3d(short _width, short _height, short _depth, boolean _hasMips, int _format, long _flags, long _mem, long _external) {
         long __functionAddress = Functions.create_texture_3d;
         if (CHECKS) {
             if (_mem != NULL) { BGFXMemory.validate(_mem); }
         }
-        return invokeCCCJPC(_width, _height, _depth, _hasMips, _format, _flags, _mem, __functionAddress);
+        return invokeCCCJPJC(_width, _height, _depth, _hasMips, _format, _flags, _mem, _external, __functionAddress);
     }
 
-    /** {@code bgfx_texture_handle_t bgfx_create_texture_3d(uint16_t _width, uint16_t _height, uint16_t _depth, bool _hasMips, bgfx_texture_format_t _format, uint64_t _flags, bgfx_memory_t const * _mem)} */
+    /** {@code bgfx_texture_handle_t bgfx_create_texture_3d(uint16_t _width, uint16_t _height, uint16_t _depth, bool _hasMips, bgfx_texture_format_t _format, uint64_t _flags, bgfx_memory_t const * _mem, uint64_t _external)} */
     @NativeType("bgfx_texture_handle_t")
-    public static short bgfx_create_texture_3d(@NativeType("uint16_t") int _width, @NativeType("uint16_t") int _height, @NativeType("uint16_t") int _depth, @NativeType("bool") boolean _hasMips, @NativeType("bgfx_texture_format_t") int _format, @NativeType("uint64_t") long _flags, @NativeType("bgfx_memory_t const *") @Nullable BGFXMemory _mem) {
-        return nbgfx_create_texture_3d((short)_width, (short)_height, (short)_depth, _hasMips, _format, _flags, memAddressSafe(_mem));
+    public static short bgfx_create_texture_3d(@NativeType("uint16_t") int _width, @NativeType("uint16_t") int _height, @NativeType("uint16_t") int _depth, @NativeType("bool") boolean _hasMips, @NativeType("bgfx_texture_format_t") int _format, @NativeType("uint64_t") long _flags, @NativeType("bgfx_memory_t const *") @Nullable BGFXMemory _mem, @NativeType("uint64_t") long _external) {
+        return nbgfx_create_texture_3d((short)_width, (short)_height, (short)_depth, _hasMips, _format, _flags, memAddressSafe(_mem), _external);
     }
 
     // --- [ bgfx_create_texture_cube ] ---
 
-    /** {@code bgfx_texture_handle_t bgfx_create_texture_cube(uint16_t _size, bool _hasMips, uint16_t _numLayers, bgfx_texture_format_t _format, uint64_t _flags, bgfx_memory_t const * _mem)} */
-    public static short nbgfx_create_texture_cube(short _size, boolean _hasMips, short _numLayers, int _format, long _flags, long _mem) {
+    /** {@code bgfx_texture_handle_t bgfx_create_texture_cube(uint16_t _size, bool _hasMips, uint16_t _numLayers, bgfx_texture_format_t _format, uint64_t _flags, bgfx_memory_t const * _mem, uint64_t _external)} */
+    public static short nbgfx_create_texture_cube(short _size, boolean _hasMips, short _numLayers, int _format, long _flags, long _mem, long _external) {
         long __functionAddress = Functions.create_texture_cube;
         if (CHECKS) {
             if (_mem != NULL) { BGFXMemory.validate(_mem); }
         }
-        return invokeCCJPC(_size, _hasMips, _numLayers, _format, _flags, _mem, __functionAddress);
+        return invokeCCJPJC(_size, _hasMips, _numLayers, _format, _flags, _mem, _external, __functionAddress);
     }
 
-    /** {@code bgfx_texture_handle_t bgfx_create_texture_cube(uint16_t _size, bool _hasMips, uint16_t _numLayers, bgfx_texture_format_t _format, uint64_t _flags, bgfx_memory_t const * _mem)} */
+    /** {@code bgfx_texture_handle_t bgfx_create_texture_cube(uint16_t _size, bool _hasMips, uint16_t _numLayers, bgfx_texture_format_t _format, uint64_t _flags, bgfx_memory_t const * _mem, uint64_t _external)} */
     @NativeType("bgfx_texture_handle_t")
-    public static short bgfx_create_texture_cube(@NativeType("uint16_t") int _size, @NativeType("bool") boolean _hasMips, @NativeType("uint16_t") int _numLayers, @NativeType("bgfx_texture_format_t") int _format, @NativeType("uint64_t") long _flags, @NativeType("bgfx_memory_t const *") @Nullable BGFXMemory _mem) {
-        return nbgfx_create_texture_cube((short)_size, _hasMips, (short)_numLayers, _format, _flags, memAddressSafe(_mem));
+    public static short bgfx_create_texture_cube(@NativeType("uint16_t") int _size, @NativeType("bool") boolean _hasMips, @NativeType("uint16_t") int _numLayers, @NativeType("bgfx_texture_format_t") int _format, @NativeType("uint64_t") long _flags, @NativeType("bgfx_memory_t const *") @Nullable BGFXMemory _mem, @NativeType("uint64_t") long _external) {
+        return nbgfx_create_texture_cube((short)_size, _hasMips, (short)_numLayers, _format, _flags, memAddressSafe(_mem), _external);
     }
 
     // --- [ bgfx_update_texture_2d ] ---

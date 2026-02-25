@@ -56,8 +56,8 @@ public abstract class BGFXScreenShotCallback extends Callback implements BGFXScr
         }
 
         @Override
-        public void invoke(long _this, long _filePath, int _width, int _height, int _pitch, long _data, int _size, boolean _yflip) {
-            delegate.invoke(_this, _filePath, _width, _height, _pitch, _data, _size, _yflip);
+        public void invoke(long _this, long _filePath, int _width, int _height, int _pitch, int _format, long _data, int _size, boolean _yflip) {
+            delegate.invoke(_this, _filePath, _width, _height, _pitch, _format, _data, _size, _yflip);
         }
 
     }

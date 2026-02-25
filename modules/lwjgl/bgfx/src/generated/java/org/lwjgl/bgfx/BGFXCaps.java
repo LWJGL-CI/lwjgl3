@@ -28,7 +28,7 @@ import static org.lwjgl.bgfx.BGFX.BGFX_TEXTURE_FORMAT_COUNT;
  *     uint8_t numGPUs;
  *     {@link BGFXCapsGPU bgfx_caps_gpu_t} gpu[4];
  *     {@link BGFXCapsLimits bgfx_caps_limits_t} limits;
- *     uint16_t formats[BGFX_TEXTURE_FORMAT_COUNT];
+ *     uint32_t formats[BGFX_TEXTURE_FORMAT_COUNT];
  * }</code></pre>
  */
 @NativeType("struct bgfx_caps_t")
@@ -64,7 +64,7 @@ public class BGFXCaps extends Struct<BGFXCaps> {
             __member(1),
             __array(BGFXCapsGPU.SIZEOF, BGFXCapsGPU.ALIGNOF, 4),
             __member(BGFXCapsLimits.SIZEOF, BGFXCapsLimits.ALIGNOF),
-            __array(2, BGFX_TEXTURE_FORMAT_COUNT)
+            __array(4, BGFX_TEXTURE_FORMAT_COUNT)
         );
 
         SIZEOF = layout.getSize();
@@ -134,12 +134,12 @@ public class BGFXCaps extends Struct<BGFXCaps> {
     /** @return a {@link BGFXCapsLimits} view of the {@code limits} field. */
     @NativeType("bgfx_caps_limits_t")
     public BGFXCapsLimits limits() { return nlimits(address()); }
-    /** @return a {@link ShortBuffer} view of the {@code formats} field. */
-    @NativeType("uint16_t[BGFX_TEXTURE_FORMAT_COUNT]")
-    public ShortBuffer formats() { return nformats(address()); }
+    /** @return a {@link IntBuffer} view of the {@code formats} field. */
+    @NativeType("uint32_t[BGFX_TEXTURE_FORMAT_COUNT]")
+    public IntBuffer formats() { return nformats(address()); }
     /** @return the value at the specified index of the {@code formats} field. */
-    @NativeType("uint16_t")
-    public short formats(int index) { return nformats(address(), index); }
+    @NativeType("uint32_t")
+    public int formats(int index) { return nformats(address(), index); }
 
     // -----------------------------------
 
@@ -178,10 +178,10 @@ public class BGFXCaps extends Struct<BGFXCaps> {
     /** Unsafe version of {@link #limits}. */
     public static BGFXCapsLimits nlimits(long struct) { return BGFXCapsLimits.create(struct + BGFXCaps.LIMITS); }
     /** Unsafe version of {@link #formats}. */
-    public static ShortBuffer nformats(long struct) { return memShortBuffer(struct + BGFXCaps.FORMATS, BGFX_TEXTURE_FORMAT_COUNT); }
+    public static IntBuffer nformats(long struct) { return memIntBuffer(struct + BGFXCaps.FORMATS, BGFX_TEXTURE_FORMAT_COUNT); }
     /** Unsafe version of {@link #formats(int) formats}. */
-    public static short nformats(long struct, int index) {
-        return memGetShort(struct + BGFXCaps.FORMATS + check(index, BGFX_TEXTURE_FORMAT_COUNT) * 2);
+    public static int nformats(long struct, int index) {
+        return memGetInt(struct + BGFXCaps.FORMATS + check(index, BGFX_TEXTURE_FORMAT_COUNT) * 4);
     }
 
 }

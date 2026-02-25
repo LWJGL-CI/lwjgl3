@@ -9,7 +9,7 @@ import org.lwjgl.generator.*
 
 val BGFX = "BGFX".nativeClass(Module.BGFX, prefix = "BGFX", prefixMethod = "bgfx_", binding = BGFX_BINDING) {
     IntConstant(
-        "API_VERSION".."136"
+        "API_VERSION".."140"
     )
 
     ShortConstant(
@@ -272,7 +272,8 @@ val BGFX = "BGFX".nativeClass(Module.BGFX, prefix = "BGFX", prefixMethod = "bgfx
         "TEXTURE_COMPUTE_WRITE"..0x0000100000000000L,
         "TEXTURE_SRGB"..0x0000200000000000L,
         "TEXTURE_BLIT_DST"..0x0000400000000000L,
-        "TEXTURE_READ_BACK"..0x0000800000000000L
+        "TEXTURE_READ_BACK"..0x0000800000000000L,
+        "TEXTURE_EXTERNAL_SHARED"..0x0001000000000000L
     )
 
     IntConstant(
@@ -417,15 +418,17 @@ val BGFX = "BGFX".nativeClass(Module.BGFX, prefix = "BGFX", prefixMethod = "bgfx
         "CAPS_TEXTURE_COMPARE_RESERVED"..0x0000000000100000L,
         "CAPS_TEXTURE_CUBE_ARRAY"..0x0000000000200000L,
         "CAPS_TEXTURE_DIRECT_ACCESS"..0x0000000000400000L,
-        "CAPS_TEXTURE_READ_BACK"..0x0000000000800000L,
-        "CAPS_TEXTURE_2D_ARRAY"..0x0000000001000000L,
-        "CAPS_TEXTURE_3D"..0x0000000002000000L,
-        "CAPS_TRANSPARENT_BACKBUFFER"..0x0000000004000000L,
-        "CAPS_VARIABLE_RATE_SHADING"..0x0000000008000000,
-        "CAPS_VERTEX_ATTRIB_HALF"..0x0000000010000000,
-        "CAPS_VERTEX_ATTRIB_UINT10"..0x0000000020000000,
-        "CAPS_VERTEX_ID"..0x0000000040000000,
-        "CAPS_VIEWPORT_LAYER_ARRAY"..0x0000000080000000,
+        "CAPS_TEXTURE_EXTERNAL"..0x0000000000800000L,
+        "CAPS_TEXTURE_EXTERNAL_SHARED"..0x0000000001000000L,
+        "CAPS_TEXTURE_READ_BACK"..0x0000000002000000L,
+        "CAPS_TEXTURE_2D_ARRAY"..0x0000000004000000L,
+        "CAPS_TEXTURE_3D"..0x0000000008000000L,
+        "CAPS_TRANSPARENT_BACKBUFFER"..0x0000000010000000L,
+        "CAPS_VARIABLE_RATE_SHADING"..0x0000000020000000L,
+        "CAPS_VERTEX_ATTRIB_HALF"..0x0000000040000000L,
+        "CAPS_VERTEX_ATTRIB_UINT10"..0x0000000080000000L,
+        "CAPS_VERTEX_ID"..0x0000000100000000L,
+        "CAPS_VIEWPORT_LAYER_ARRAY"..0x0000000200000000L,
         "CAPS_TEXTURE_COMPARE_ALL".."BGFX_CAPS_TEXTURE_COMPARE_RESERVED | BGFX_CAPS_TEXTURE_COMPARE_LEQUAL"
     )
 
@@ -446,7 +449,8 @@ val BGFX = "BGFX".nativeClass(Module.BGFX, prefix = "BGFX", prefixMethod = "bgfx
         "CAPS_FORMAT_TEXTURE_FRAMEBUFFER"..0x00001000,
         "CAPS_FORMAT_TEXTURE_FRAMEBUFFER_MSAA"..0x00002000,
         "CAPS_FORMAT_TEXTURE_MSAA"..0x00004000,
-        "CAPS_FORMAT_TEXTURE_MIP_AUTOGEN"..0x00008000
+        "CAPS_FORMAT_TEXTURE_MIP_AUTOGEN"..0x00008000,
+        "CAPS_FORMAT_TEXTURE_BACKBUFFER"..0x00010000
     )
 
     ByteConstant(
@@ -472,6 +476,12 @@ val BGFX = "BGFX".nativeClass(Module.BGFX, prefix = "BGFX", prefixMethod = "bgfx
         "CUBE_MAP_NEGATIVE_Y"..0x03.b,
         "CUBE_MAP_POSITIVE_Z"..0x04.b,
         "CUBE_MAP_NEGATIVE_Z"..0x05.b
+    )
+
+    ByteConstant(
+        "FRAME_NONE"..0x00.b,
+        "FRAME_DEBUG_CAPTURE"..0x01.b,
+        "FRAME_DISCARD"..0x02.b
     )
 
     EnumConstant(
@@ -956,7 +966,7 @@ val BGFX = "BGFX".nativeClass(Module.BGFX, prefix = "BGFX", prefixMethod = "bgfx
     uint32_t(
         "frame",
 
-        bool("_capture")
+        MapToInt..uint8_t("_flags")
     )
 
     bgfx_renderer_type_t(
@@ -1324,7 +1334,8 @@ val BGFX = "BGFX".nativeClass(Module.BGFX, prefix = "BGFX", prefixMethod = "bgfx
         MapToInt..uint16_t("_numLayers"),
         bgfx_texture_format_t("_format"),
         uint64_t("_flags"),
-        nullable..bgfx_memory_t.const.p("_mem")
+        nullable..bgfx_memory_t.const.p("_mem"),
+        uint64_t("_external")
     )
 
     bgfx_texture_handle_t(
@@ -1346,7 +1357,8 @@ val BGFX = "BGFX".nativeClass(Module.BGFX, prefix = "BGFX", prefixMethod = "bgfx
         bool("_hasMips"),
         bgfx_texture_format_t("_format"),
         uint64_t("_flags"),
-        nullable..bgfx_memory_t.const.p("_mem")
+        nullable..bgfx_memory_t.const.p("_mem"),
+        uint64_t("_external")
     )
 
     bgfx_texture_handle_t(
@@ -1357,7 +1369,8 @@ val BGFX = "BGFX".nativeClass(Module.BGFX, prefix = "BGFX", prefixMethod = "bgfx
         MapToInt..uint16_t("_numLayers"),
         bgfx_texture_format_t("_format"),
         uint64_t("_flags"),
-        nullable..bgfx_memory_t.const.p("_mem")
+        nullable..bgfx_memory_t.const.p("_mem"),
+        uint64_t("_external")
     )
 
     void(
