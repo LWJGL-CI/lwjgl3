@@ -21,8 +21,8 @@ import static org.lwjgl.system.MemoryStack.*;
  *     VkStructureType sType;
  *     void const * pNext;
  *     VkUbmSurfaceCreateFlagsSEC flags;
- *     ubm_device * ubm_device;
- *     ubm_surface * ubm_surface;
+ *     ubm_device * device;
+ *     ubm_surface * surface;
  * }}</pre>
  */
 public class VkUbmSurfaceCreateInfoSEC extends Struct<VkUbmSurfaceCreateInfoSEC> implements NativeResource {
@@ -38,8 +38,8 @@ public class VkUbmSurfaceCreateInfoSEC extends Struct<VkUbmSurfaceCreateInfoSEC>
         STYPE,
         PNEXT,
         FLAGS,
-        UBM_DEVICE,
-        UBM_SURFACE;
+        DEVICE,
+        SURFACE;
 
     static {
         Layout layout = __struct(
@@ -56,8 +56,8 @@ public class VkUbmSurfaceCreateInfoSEC extends Struct<VkUbmSurfaceCreateInfoSEC>
         STYPE = layout.offsetof(0);
         PNEXT = layout.offsetof(1);
         FLAGS = layout.offsetof(2);
-        UBM_DEVICE = layout.offsetof(3);
-        UBM_SURFACE = layout.offsetof(4);
+        DEVICE = layout.offsetof(3);
+        SURFACE = layout.offsetof(4);
     }
 
     protected VkUbmSurfaceCreateInfoSEC(long address, @Nullable ByteBuffer container) {
@@ -91,12 +91,12 @@ public class VkUbmSurfaceCreateInfoSEC extends Struct<VkUbmSurfaceCreateInfoSEC>
     /** @return the value of the {@code flags} field. */
     @NativeType("VkUbmSurfaceCreateFlagsSEC")
     public int flags() { return nflags(address()); }
-    /** @return the value of the {@code ubm_device} field. */
+    /** @return the value of the {@code device} field. */
     @NativeType("ubm_device *")
-    public long ubm_device() { return nubm_device(address()); }
-    /** @return the value of the {@code ubm_surface} field. */
+    public long device() { return ndevice(address()); }
+    /** @return the value of the {@code surface} field. */
     @NativeType("ubm_surface *")
-    public long ubm_surface() { return nubm_surface(address()); }
+    public long surface() { return nsurface(address()); }
 
     /** Sets the specified value to the {@code sType} field. */
     public VkUbmSurfaceCreateInfoSEC sType(@NativeType("VkStructureType") int value) { nsType(address(), value); return this; }
@@ -106,24 +106,24 @@ public class VkUbmSurfaceCreateInfoSEC extends Struct<VkUbmSurfaceCreateInfoSEC>
     public VkUbmSurfaceCreateInfoSEC pNext(@NativeType("void const *") long value) { npNext(address(), value); return this; }
     /** Sets the specified value to the {@code flags} field. */
     public VkUbmSurfaceCreateInfoSEC flags(@NativeType("VkUbmSurfaceCreateFlagsSEC") int value) { nflags(address(), value); return this; }
-    /** Sets the specified value to the {@code ubm_device} field. */
-    public VkUbmSurfaceCreateInfoSEC ubm_device(@NativeType("ubm_device *") long value) { nubm_device(address(), value); return this; }
-    /** Sets the specified value to the {@code ubm_surface} field. */
-    public VkUbmSurfaceCreateInfoSEC ubm_surface(@NativeType("ubm_surface *") long value) { nubm_surface(address(), value); return this; }
+    /** Sets the specified value to the {@code device} field. */
+    public VkUbmSurfaceCreateInfoSEC device(@NativeType("ubm_device *") long value) { ndevice(address(), value); return this; }
+    /** Sets the specified value to the {@code surface} field. */
+    public VkUbmSurfaceCreateInfoSEC surface(@NativeType("ubm_surface *") long value) { nsurface(address(), value); return this; }
 
     /** Initializes this struct with the specified values. */
     public VkUbmSurfaceCreateInfoSEC set(
         int sType,
         long pNext,
         int flags,
-        long ubm_device,
-        long ubm_surface
+        long device,
+        long surface
     ) {
         sType(sType);
         pNext(pNext);
         flags(flags);
-        ubm_device(ubm_device);
-        ubm_surface(ubm_surface);
+        device(device);
+        surface(surface);
 
         return this;
     }
@@ -257,10 +257,10 @@ public class VkUbmSurfaceCreateInfoSEC extends Struct<VkUbmSurfaceCreateInfoSEC>
     public static long npNext(long struct) { return memGetAddress(struct + VkUbmSurfaceCreateInfoSEC.PNEXT); }
     /** Unsafe version of {@link #flags}. */
     public static int nflags(long struct) { return memGetInt(struct + VkUbmSurfaceCreateInfoSEC.FLAGS); }
-    /** Unsafe version of {@link #ubm_device}. */
-    public static long nubm_device(long struct) { return memGetAddress(struct + VkUbmSurfaceCreateInfoSEC.UBM_DEVICE); }
-    /** Unsafe version of {@link #ubm_surface}. */
-    public static long nubm_surface(long struct) { return memGetAddress(struct + VkUbmSurfaceCreateInfoSEC.UBM_SURFACE); }
+    /** Unsafe version of {@link #device}. */
+    public static long ndevice(long struct) { return memGetAddress(struct + VkUbmSurfaceCreateInfoSEC.DEVICE); }
+    /** Unsafe version of {@link #surface}. */
+    public static long nsurface(long struct) { return memGetAddress(struct + VkUbmSurfaceCreateInfoSEC.SURFACE); }
 
     /** Unsafe version of {@link #sType(int) sType}. */
     public static void nsType(long struct, int value) { memPutInt(struct + VkUbmSurfaceCreateInfoSEC.STYPE, value); }
@@ -268,10 +268,10 @@ public class VkUbmSurfaceCreateInfoSEC extends Struct<VkUbmSurfaceCreateInfoSEC>
     public static void npNext(long struct, long value) { memPutAddress(struct + VkUbmSurfaceCreateInfoSEC.PNEXT, value); }
     /** Unsafe version of {@link #flags(int) flags}. */
     public static void nflags(long struct, int value) { memPutInt(struct + VkUbmSurfaceCreateInfoSEC.FLAGS, value); }
-    /** Unsafe version of {@link #ubm_device(long) ubm_device}. */
-    public static void nubm_device(long struct, long value) { memPutAddress(struct + VkUbmSurfaceCreateInfoSEC.UBM_DEVICE, value); }
-    /** Unsafe version of {@link #ubm_surface(long) ubm_surface}. */
-    public static void nubm_surface(long struct, long value) { memPutAddress(struct + VkUbmSurfaceCreateInfoSEC.UBM_SURFACE, value); }
+    /** Unsafe version of {@link #device(long) device}. */
+    public static void ndevice(long struct, long value) { memPutAddress(struct + VkUbmSurfaceCreateInfoSEC.DEVICE, value); }
+    /** Unsafe version of {@link #surface(long) surface}. */
+    public static void nsurface(long struct, long value) { memPutAddress(struct + VkUbmSurfaceCreateInfoSEC.SURFACE, value); }
 
     // -----------------------------------
 
@@ -325,12 +325,12 @@ public class VkUbmSurfaceCreateInfoSEC extends Struct<VkUbmSurfaceCreateInfoSEC>
         /** @return the value of the {@code flags} field. */
         @NativeType("VkUbmSurfaceCreateFlagsSEC")
         public int flags() { return VkUbmSurfaceCreateInfoSEC.nflags(address()); }
-        /** @return the value of the {@code ubm_device} field. */
+        /** @return the value of the {@code device} field. */
         @NativeType("ubm_device *")
-        public long ubm_device() { return VkUbmSurfaceCreateInfoSEC.nubm_device(address()); }
-        /** @return the value of the {@code ubm_surface} field. */
+        public long device() { return VkUbmSurfaceCreateInfoSEC.ndevice(address()); }
+        /** @return the value of the {@code surface} field. */
         @NativeType("ubm_surface *")
-        public long ubm_surface() { return VkUbmSurfaceCreateInfoSEC.nubm_surface(address()); }
+        public long surface() { return VkUbmSurfaceCreateInfoSEC.nsurface(address()); }
 
         /** Sets the specified value to the {@code sType} field. */
         public VkUbmSurfaceCreateInfoSEC.Buffer sType(@NativeType("VkStructureType") int value) { VkUbmSurfaceCreateInfoSEC.nsType(address(), value); return this; }
@@ -340,10 +340,10 @@ public class VkUbmSurfaceCreateInfoSEC extends Struct<VkUbmSurfaceCreateInfoSEC>
         public VkUbmSurfaceCreateInfoSEC.Buffer pNext(@NativeType("void const *") long value) { VkUbmSurfaceCreateInfoSEC.npNext(address(), value); return this; }
         /** Sets the specified value to the {@code flags} field. */
         public VkUbmSurfaceCreateInfoSEC.Buffer flags(@NativeType("VkUbmSurfaceCreateFlagsSEC") int value) { VkUbmSurfaceCreateInfoSEC.nflags(address(), value); return this; }
-        /** Sets the specified value to the {@code ubm_device} field. */
-        public VkUbmSurfaceCreateInfoSEC.Buffer ubm_device(@NativeType("ubm_device *") long value) { VkUbmSurfaceCreateInfoSEC.nubm_device(address(), value); return this; }
-        /** Sets the specified value to the {@code ubm_surface} field. */
-        public VkUbmSurfaceCreateInfoSEC.Buffer ubm_surface(@NativeType("ubm_surface *") long value) { VkUbmSurfaceCreateInfoSEC.nubm_surface(address(), value); return this; }
+        /** Sets the specified value to the {@code device} field. */
+        public VkUbmSurfaceCreateInfoSEC.Buffer device(@NativeType("ubm_device *") long value) { VkUbmSurfaceCreateInfoSEC.ndevice(address(), value); return this; }
+        /** Sets the specified value to the {@code surface} field. */
+        public VkUbmSurfaceCreateInfoSEC.Buffer surface(@NativeType("ubm_surface *") long value) { VkUbmSurfaceCreateInfoSEC.nsurface(address(), value); return this; }
 
     }
 

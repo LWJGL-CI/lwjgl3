@@ -1881,6 +1881,8 @@ public class VKCapabilitiesDevice {
     public final boolean VK_VALVE_fragment_density_map_layered;
     /** When true, {@code VALVE_mutable_descriptor_type} is supported. */
     public final boolean VK_VALVE_mutable_descriptor_type;
+    /** When true, {@code VALVE_shader_mixed_float_dot_product} is supported. */
+    public final boolean VK_VALVE_shader_mixed_float_dot_product;
     /** When true, {@code VALVE_video_encode_rgb_conversion} is supported. */
     public final boolean VK_VALVE_video_encode_rgb_conversion;
 
@@ -2293,6 +2295,7 @@ public class VKCapabilitiesDevice {
         VK_VALVE_descriptor_set_host_mapping = check_VALVE_descriptor_set_host_mapping(provider, caps, ext);
         VK_VALVE_fragment_density_map_layered = ext.contains("VK_VALVE_fragment_density_map_layered");
         VK_VALVE_mutable_descriptor_type = ext.contains("VK_VALVE_mutable_descriptor_type");
+        VK_VALVE_shader_mixed_float_dot_product = ext.contains("VK_VALVE_shader_mixed_float_dot_product");
         VK_VALVE_video_encode_rgb_conversion = ext.contains("VK_VALVE_video_encode_rgb_conversion");
 
         vkGetDeviceProcAddr = caps[0];

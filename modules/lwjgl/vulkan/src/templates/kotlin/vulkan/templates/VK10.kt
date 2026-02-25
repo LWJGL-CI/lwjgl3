@@ -86,45 +86,6 @@ val VK10 = "VK10".nativeClass(Module.VULKAN, "VK10", prefix = "VK", binding = VK
     )
 
     EnumConstant(
-        "ACCESS_INDIRECT_COMMAND_READ_BIT".enum(0x00000001),
-        "ACCESS_INDEX_READ_BIT".enum(0x00000002),
-        "ACCESS_VERTEX_ATTRIBUTE_READ_BIT".enum(0x00000004),
-        "ACCESS_UNIFORM_READ_BIT".enum(0x00000008),
-        "ACCESS_INPUT_ATTACHMENT_READ_BIT".enum(0x00000010),
-        "ACCESS_SHADER_READ_BIT".enum(0x00000020),
-        "ACCESS_SHADER_WRITE_BIT".enum(0x00000040),
-        "ACCESS_COLOR_ATTACHMENT_READ_BIT".enum(0x00000080),
-        "ACCESS_COLOR_ATTACHMENT_WRITE_BIT".enum(0x00000100),
-        "ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT".enum(0x00000200),
-        "ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT".enum(0x00000400),
-        "ACCESS_TRANSFER_READ_BIT".enum(0x00000800),
-        "ACCESS_TRANSFER_WRITE_BIT".enum(0x00001000),
-        "ACCESS_HOST_READ_BIT".enum(0x00002000),
-        "ACCESS_HOST_WRITE_BIT".enum(0x00004000),
-        "ACCESS_MEMORY_READ_BIT".enum(0x00008000),
-        "ACCESS_MEMORY_WRITE_BIT".enum(0x00010000)
-    )
-
-    EnumConstant(
-        "IMAGE_LAYOUT_UNDEFINED".."0",
-        "IMAGE_LAYOUT_GENERAL".."1",
-        "IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL".."2",
-        "IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL".."3",
-        "IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL".."4",
-        "IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL".."5",
-        "IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL".."6",
-        "IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL".."7",
-        "IMAGE_LAYOUT_PREINITIALIZED".."8"
-    )
-
-    EnumConstant(
-        "IMAGE_ASPECT_COLOR_BIT".enum(0x00000001),
-        "IMAGE_ASPECT_DEPTH_BIT".enum(0x00000002),
-        "IMAGE_ASPECT_STENCIL_BIT".enum(0x00000004),
-        "IMAGE_ASPECT_METADATA_BIT".enum(0x00000008)
-    )
-
-    EnumConstant(
         "OBJECT_TYPE_UNKNOWN".."0",
         "OBJECT_TYPE_INSTANCE".."1",
         "OBJECT_TYPE_PHYSICAL_DEVICE".."2",
@@ -448,6 +409,17 @@ val VK10 = "VK10".nativeClass(Module.VULKAN, "VK10", prefix = "VK", binding = VK
     )
 
     EnumConstant(
+        "SHADER_STAGE_VERTEX_BIT".enum(0x00000001),
+        "SHADER_STAGE_TESSELLATION_CONTROL_BIT".enum(0x00000002),
+        "SHADER_STAGE_TESSELLATION_EVALUATION_BIT".enum(0x00000004),
+        "SHADER_STAGE_GEOMETRY_BIT".enum(0x00000008),
+        "SHADER_STAGE_FRAGMENT_BIT".enum(0x00000010),
+        "SHADER_STAGE_ALL_GRAPHICS".."0x0000001F",
+        "SHADER_STAGE_COMPUTE_BIT".enum(0x00000020),
+        "SHADER_STAGE_ALL".."0x7FFFFFFF"
+    )
+
+    EnumConstant(
         "PIPELINE_STAGE_TOP_OF_PIPE_BIT".enum(0x00000001),
         "PIPELINE_STAGE_DRAW_INDIRECT_BIT".enum(0x00000002),
         "PIPELINE_STAGE_VERTEX_INPUT_BIT".enum(0x00000004),
@@ -468,7 +440,10 @@ val VK10 = "VK10".nativeClass(Module.VULKAN, "VK10", prefix = "VK", binding = VK
     )
 
     EnumConstant(
-        "SPARSE_MEMORY_BIND_METADATA_BIT".enum(0x00000001)
+        "IMAGE_ASPECT_COLOR_BIT".enum(0x00000001),
+        "IMAGE_ASPECT_DEPTH_BIT".enum(0x00000002),
+        "IMAGE_ASPECT_STENCIL_BIT".enum(0x00000004),
+        "IMAGE_ASPECT_METADATA_BIT".enum(0x00000008)
     )
 
     EnumConstant(
@@ -478,13 +453,11 @@ val VK10 = "VK10".nativeClass(Module.VULKAN, "VK10", prefix = "VK", binding = VK
     )
 
     EnumConstant(
-        "FENCE_CREATE_SIGNALED_BIT".enum(0x00000001)
+        "SPARSE_MEMORY_BIND_METADATA_BIT".enum(0x00000001)
     )
 
     EnumConstant(
-        "QUERY_TYPE_OCCLUSION".."0",
-        "QUERY_TYPE_PIPELINE_STATISTICS".."1",
-        "QUERY_TYPE_TIMESTAMP".."2"
+        "FENCE_CREATE_SIGNALED_BIT".enum(0x00000001)
     )
 
     EnumConstant(
@@ -499,6 +472,12 @@ val VK10 = "VK10".nativeClass(Module.VULKAN, "VK10", prefix = "VK", binding = VK
         "QUERY_PIPELINE_STATISTIC_TESSELLATION_CONTROL_SHADER_PATCHES_BIT".enum(0x00000100),
         "QUERY_PIPELINE_STATISTIC_TESSELLATION_EVALUATION_SHADER_INVOCATIONS_BIT".enum(0x00000200),
         "QUERY_PIPELINE_STATISTIC_COMPUTE_SHADER_INVOCATIONS_BIT".enum(0x00000400)
+    )
+
+    EnumConstant(
+        "QUERY_TYPE_OCCLUSION".."0",
+        "QUERY_TYPE_PIPELINE_STATISTICS".."1",
+        "QUERY_TYPE_TIMESTAMP".."2"
     )
 
     EnumConstant(
@@ -532,6 +511,18 @@ val VK10 = "VK10".nativeClass(Module.VULKAN, "VK10", prefix = "VK", binding = VK
     )
 
     EnumConstant(
+        "IMAGE_LAYOUT_UNDEFINED".."0",
+        "IMAGE_LAYOUT_GENERAL".."1",
+        "IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL".."2",
+        "IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL".."3",
+        "IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL".."4",
+        "IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL".."5",
+        "IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL".."6",
+        "IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL".."7",
+        "IMAGE_LAYOUT_PREINITIALIZED".."8"
+    )
+
+    EnumConstant(
         "COMPONENT_SWIZZLE_IDENTITY".."0",
         "COMPONENT_SWIZZLE_ZERO".."1",
         "COMPONENT_SWIZZLE_ONE".."2",
@@ -549,6 +540,26 @@ val VK10 = "VK10".nativeClass(Module.VULKAN, "VK10", prefix = "VK", binding = VK
         "IMAGE_VIEW_TYPE_1D_ARRAY".."4",
         "IMAGE_VIEW_TYPE_2D_ARRAY".."5",
         "IMAGE_VIEW_TYPE_CUBE_ARRAY".."6"
+    )
+
+    EnumConstant(
+        "ACCESS_INDIRECT_COMMAND_READ_BIT".enum(0x00000001),
+        "ACCESS_INDEX_READ_BIT".enum(0x00000002),
+        "ACCESS_VERTEX_ATTRIBUTE_READ_BIT".enum(0x00000004),
+        "ACCESS_UNIFORM_READ_BIT".enum(0x00000008),
+        "ACCESS_INPUT_ATTACHMENT_READ_BIT".enum(0x00000010),
+        "ACCESS_SHADER_READ_BIT".enum(0x00000020),
+        "ACCESS_SHADER_WRITE_BIT".enum(0x00000040),
+        "ACCESS_COLOR_ATTACHMENT_READ_BIT".enum(0x00000080),
+        "ACCESS_COLOR_ATTACHMENT_WRITE_BIT".enum(0x00000100),
+        "ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT".enum(0x00000200),
+        "ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT".enum(0x00000400),
+        "ACCESS_TRANSFER_READ_BIT".enum(0x00000800),
+        "ACCESS_TRANSFER_WRITE_BIT".enum(0x00001000),
+        "ACCESS_HOST_READ_BIT".enum(0x00002000),
+        "ACCESS_HOST_WRITE_BIT".enum(0x00004000),
+        "ACCESS_MEMORY_READ_BIT".enum(0x00008000),
+        "ACCESS_MEMORY_WRITE_BIT".enum(0x00010000)
     )
 
     EnumConstant(
@@ -570,13 +581,13 @@ val VK10 = "VK10".nativeClass(Module.VULKAN, "VK10", prefix = "VK", binding = VK
     )
 
     EnumConstant(
-        "COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT".enum(0x00000001),
-        "COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT".enum(0x00000002),
-        "COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT".enum(0x00000004)
+        "QUERY_CONTROL_PRECISE_BIT".enum(0x00000001)
     )
 
     EnumConstant(
-        "QUERY_CONTROL_PRECISE_BIT".enum(0x00000001)
+        "COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT".enum(0x00000001),
+        "COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT".enum(0x00000002),
+        "COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT".enum(0x00000004)
     )
 
     EnumConstant(
@@ -596,17 +607,6 @@ val VK10 = "VK10".nativeClass(Module.VULKAN, "VK10", prefix = "VK", binding = VK
         "PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT".enum(0x00000001),
         "PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT".enum(0x00000002),
         "PIPELINE_CREATE_DERIVATIVE_BIT".enum(0x00000004)
-    )
-
-    EnumConstant(
-        "SHADER_STAGE_VERTEX_BIT".enum(0x00000001),
-        "SHADER_STAGE_TESSELLATION_CONTROL_BIT".enum(0x00000002),
-        "SHADER_STAGE_TESSELLATION_EVALUATION_BIT".enum(0x00000004),
-        "SHADER_STAGE_GEOMETRY_BIT".enum(0x00000008),
-        "SHADER_STAGE_FRAGMENT_BIT".enum(0x00000010),
-        "SHADER_STAGE_ALL_GRAPHICS".."0x0000001F",
-        "SHADER_STAGE_COMPUTE_BIT".enum(0x00000020),
-        "SHADER_STAGE_ALL".."0x7FFFFFFF"
     )
 
     EnumConstant(
@@ -631,11 +631,6 @@ val VK10 = "VK10".nativeClass(Module.VULKAN, "VK10", prefix = "VK", binding = VK
     )
 
     EnumConstant(
-        "SAMPLER_MIPMAP_MODE_NEAREST".."0",
-        "SAMPLER_MIPMAP_MODE_LINEAR".."1"
-    )
-
-    EnumConstant(
         "COMPARE_OP_NEVER".."0",
         "COMPARE_OP_LESS".."1",
         "COMPARE_OP_EQUAL".."2",
@@ -647,7 +642,8 @@ val VK10 = "VK10".nativeClass(Module.VULKAN, "VK10", prefix = "VK", binding = VK
     )
 
     EnumConstant(
-        "DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT".enum(0x00000001)
+        "SAMPLER_MIPMAP_MODE_NEAREST".."0",
+        "SAMPLER_MIPMAP_MODE_LINEAR".."1"
     )
 
     EnumConstant(
@@ -662,6 +658,10 @@ val VK10 = "VK10".nativeClass(Module.VULKAN, "VK10", prefix = "VK", binding = VK
         "DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC".."8",
         "DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC".."9",
         "DESCRIPTOR_TYPE_INPUT_ATTACHMENT".."10"
+    )
+
+    EnumConstant(
+        "DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT".enum(0x00000001)
     )
 
     EnumConstant(
@@ -731,6 +731,36 @@ val VK10 = "VK10".nativeClass(Module.VULKAN, "VK10", prefix = "VK", binding = VK
     )
 
     EnumConstant(
+        "LOGIC_OP_CLEAR".."0",
+        "LOGIC_OP_AND".."1",
+        "LOGIC_OP_AND_REVERSE".."2",
+        "LOGIC_OP_COPY".."3",
+        "LOGIC_OP_AND_INVERTED".."4",
+        "LOGIC_OP_NO_OP".."5",
+        "LOGIC_OP_XOR".."6",
+        "LOGIC_OP_OR".."7",
+        "LOGIC_OP_NOR".."8",
+        "LOGIC_OP_EQUIVALENT".."9",
+        "LOGIC_OP_INVERT".."10",
+        "LOGIC_OP_OR_REVERSE".."11",
+        "LOGIC_OP_COPY_INVERTED".."12",
+        "LOGIC_OP_OR_INVERTED".."13",
+        "LOGIC_OP_NAND".."14",
+        "LOGIC_OP_SET".."15"
+    )
+
+    EnumConstant(
+        "STENCIL_OP_KEEP".."0",
+        "STENCIL_OP_ZERO".."1",
+        "STENCIL_OP_REPLACE".."2",
+        "STENCIL_OP_INCREMENT_AND_CLAMP".."3",
+        "STENCIL_OP_DECREMENT_AND_CLAMP".."4",
+        "STENCIL_OP_INVERT".."5",
+        "STENCIL_OP_INCREMENT_AND_WRAP".."6",
+        "STENCIL_OP_DECREMENT_AND_WRAP".."7"
+    )
+
+    EnumConstant(
         "VERTEX_INPUT_RATE_VERTEX".."0",
         "VERTEX_INPUT_RATE_INSTANCE".."1"
     )
@@ -753,36 +783,6 @@ val VK10 = "VK10".nativeClass(Module.VULKAN, "VK10", prefix = "VK", binding = VK
         "POLYGON_MODE_FILL".."0",
         "POLYGON_MODE_LINE".."1",
         "POLYGON_MODE_POINT".."2"
-    )
-
-    EnumConstant(
-        "STENCIL_OP_KEEP".."0",
-        "STENCIL_OP_ZERO".."1",
-        "STENCIL_OP_REPLACE".."2",
-        "STENCIL_OP_INCREMENT_AND_CLAMP".."3",
-        "STENCIL_OP_DECREMENT_AND_CLAMP".."4",
-        "STENCIL_OP_INVERT".."5",
-        "STENCIL_OP_INCREMENT_AND_WRAP".."6",
-        "STENCIL_OP_DECREMENT_AND_WRAP".."7"
-    )
-
-    EnumConstant(
-        "LOGIC_OP_CLEAR".."0",
-        "LOGIC_OP_AND".."1",
-        "LOGIC_OP_AND_REVERSE".."2",
-        "LOGIC_OP_COPY".."3",
-        "LOGIC_OP_AND_INVERTED".."4",
-        "LOGIC_OP_NO_OP".."5",
-        "LOGIC_OP_XOR".."6",
-        "LOGIC_OP_OR".."7",
-        "LOGIC_OP_NOR".."8",
-        "LOGIC_OP_EQUIVALENT".."9",
-        "LOGIC_OP_INVERT".."10",
-        "LOGIC_OP_OR_REVERSE".."11",
-        "LOGIC_OP_COPY_INVERTED".."12",
-        "LOGIC_OP_OR_INVERTED".."13",
-        "LOGIC_OP_NAND".."14",
-        "LOGIC_OP_SET".."15"
     )
 
     EnumConstant(

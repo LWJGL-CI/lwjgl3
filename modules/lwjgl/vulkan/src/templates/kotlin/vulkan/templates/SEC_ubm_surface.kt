@@ -35,6 +35,6 @@ val SEC_ubm_surface = "SECUbmSurface".nativeClassVK("SEC_ubm_surface", type = "i
 
         VkPhysicalDevice("physicalDevice"),
         uint32_t("queueFamilyIndex"),
-        ubm_device.p("ubm_device")
+        ubm_device.p("device")
     )
 }

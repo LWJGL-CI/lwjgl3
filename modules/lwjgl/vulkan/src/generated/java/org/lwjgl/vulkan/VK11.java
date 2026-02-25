@@ -183,6 +183,20 @@ public class VK11 extends VK10 {
         VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL = 1000117001;
 
     public static final int
+        VK_SUBGROUP_FEATURE_BASIC_BIT            = 0x1,
+        VK_SUBGROUP_FEATURE_VOTE_BIT             = 0x2,
+        VK_SUBGROUP_FEATURE_ARITHMETIC_BIT       = 0x4,
+        VK_SUBGROUP_FEATURE_BALLOT_BIT           = 0x8,
+        VK_SUBGROUP_FEATURE_SHUFFLE_BIT          = 0x10,
+        VK_SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT = 0x20,
+        VK_SUBGROUP_FEATURE_CLUSTERED_BIT        = 0x40,
+        VK_SUBGROUP_FEATURE_QUAD_BIT             = 0x80;
+
+    public static final int
+        VK_POINT_CLIPPING_BEHAVIOR_ALL_CLIP_PLANES       = 0,
+        VK_POINT_CLIPPING_BEHAVIOR_USER_CLIP_PLANES_ONLY = 1;
+
+    public static final int
         VK_PEER_MEMORY_FEATURE_COPY_SRC_BIT    = 0x1,
         VK_PEER_MEMORY_FEATURE_COPY_DST_BIT    = 0x2,
         VK_PEER_MEMORY_FEATURE_GENERIC_SRC_BIT = 0x4,
@@ -230,16 +244,6 @@ public class VK11 extends VK10 {
         VK_EXTERNAL_SEMAPHORE_FEATURE_EXPORTABLE_BIT = 0x1,
         VK_EXTERNAL_SEMAPHORE_FEATURE_IMPORTABLE_BIT = 0x2;
 
-    public static final int
-        VK_SUBGROUP_FEATURE_BASIC_BIT            = 0x1,
-        VK_SUBGROUP_FEATURE_VOTE_BIT             = 0x2,
-        VK_SUBGROUP_FEATURE_ARITHMETIC_BIT       = 0x4,
-        VK_SUBGROUP_FEATURE_BALLOT_BIT           = 0x8,
-        VK_SUBGROUP_FEATURE_SHUFFLE_BIT          = 0x10,
-        VK_SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT = 0x20,
-        VK_SUBGROUP_FEATURE_CLUSTERED_BIT        = 0x40,
-        VK_SUBGROUP_FEATURE_QUAD_BIT             = 0x80;
-
     public static final int VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_DESCRIPTOR_SET = 0;
 
     public static final int
@@ -256,10 +260,6 @@ public class VK11 extends VK10 {
     public static final int
         VK_CHROMA_LOCATION_COSITED_EVEN = 0,
         VK_CHROMA_LOCATION_MIDPOINT     = 1;
-
-    public static final int
-        VK_POINT_CLIPPING_BEHAVIOR_ALL_CLIP_PLANES       = 0,
-        VK_POINT_CLIPPING_BEHAVIOR_USER_CLIP_PLANES_ONLY = 1;
 
     public static final int
         VK_TESSELLATION_DOMAIN_ORIGIN_UPPER_LEFT = 0,

@@ -10528,6 +10528,15 @@ val VkUbmSurfaceCreateInfoSEC = struct(Module.VULKAN, "VkUbmSurfaceCreateInfoSEC
     Expression("#STRUCTURE_TYPE_UBM_SURFACE_CREATE_INFO_SEC")..VkStructureType("sType")
     nullable..opaque_const_p("pNext")
     VkUbmSurfaceCreateFlagsSEC("flags")
-    nullable..ubm_device.p("ubm_device")
-    nullable..ubm_surface.p("ubm_surface")
+    nullable..ubm_device.p("device")
+    nullable..ubm_surface.p("surface")
+}
+
+val VkPhysicalDeviceShaderMixedFloatDotProductFeaturesVALVE = struct(Module.VULKAN, "VkPhysicalDeviceShaderMixedFloatDotProductFeaturesVALVE") {
+    Expression("#STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_MIXED_FLOAT_DOT_PRODUCT_FEATURES_VALVE")..VkStructureType("sType")
+    nullable..opaque_p("pNext")
+    VkBool32("shaderMixedFloatDotProductFloat16AccFloat32")
+    VkBool32("shaderMixedFloatDotProductFloat16AccFloat16")
+    VkBool32("shaderMixedFloatDotProductBFloat16Acc")
+    VkBool32("shaderMixedFloatDotProductFloat8AccFloat32")
 }

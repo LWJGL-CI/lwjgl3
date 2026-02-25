@@ -197,6 +197,22 @@ val VK11 = "VK11".nativeClass(Module.VULKAN, "VK11", prefix = "VK", binding = VK
     )
 
     EnumConstant(
+        "SUBGROUP_FEATURE_BASIC_BIT".enum(0x00000001),
+        "SUBGROUP_FEATURE_VOTE_BIT".enum(0x00000002),
+        "SUBGROUP_FEATURE_ARITHMETIC_BIT".enum(0x00000004),
+        "SUBGROUP_FEATURE_BALLOT_BIT".enum(0x00000008),
+        "SUBGROUP_FEATURE_SHUFFLE_BIT".enum(0x00000010),
+        "SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT".enum(0x00000020),
+        "SUBGROUP_FEATURE_CLUSTERED_BIT".enum(0x00000040),
+        "SUBGROUP_FEATURE_QUAD_BIT".enum(0x00000080)
+    )
+
+    EnumConstant(
+        "POINT_CLIPPING_BEHAVIOR_ALL_CLIP_PLANES".."0",
+        "POINT_CLIPPING_BEHAVIOR_USER_CLIP_PLANES_ONLY".."1"
+    )
+
+    EnumConstant(
         "PEER_MEMORY_FEATURE_COPY_SRC_BIT".enum(0x00000001),
         "PEER_MEMORY_FEATURE_COPY_DST_BIT".enum(0x00000002),
         "PEER_MEMORY_FEATURE_GENERIC_SRC_BIT".enum(0x00000004),
@@ -258,17 +274,6 @@ val VK11 = "VK11".nativeClass(Module.VULKAN, "VK11", prefix = "VK", binding = VK
     )
 
     EnumConstant(
-        "SUBGROUP_FEATURE_BASIC_BIT".enum(0x00000001),
-        "SUBGROUP_FEATURE_VOTE_BIT".enum(0x00000002),
-        "SUBGROUP_FEATURE_ARITHMETIC_BIT".enum(0x00000004),
-        "SUBGROUP_FEATURE_BALLOT_BIT".enum(0x00000008),
-        "SUBGROUP_FEATURE_SHUFFLE_BIT".enum(0x00000010),
-        "SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT".enum(0x00000020),
-        "SUBGROUP_FEATURE_CLUSTERED_BIT".enum(0x00000040),
-        "SUBGROUP_FEATURE_QUAD_BIT".enum(0x00000080)
-    )
-
-    EnumConstant(
         "DESCRIPTOR_UPDATE_TEMPLATE_TYPE_DESCRIPTOR_SET".."0"
     )
 
@@ -288,11 +293,6 @@ val VK11 = "VK11".nativeClass(Module.VULKAN, "VK11", prefix = "VK", binding = VK
     EnumConstant(
         "CHROMA_LOCATION_COSITED_EVEN".."0",
         "CHROMA_LOCATION_MIDPOINT".."1"
-    )
-
-    EnumConstant(
-        "POINT_CLIPPING_BEHAVIOR_ALL_CLIP_PLANES".."0",
-        "POINT_CLIPPING_BEHAVIOR_USER_CLIP_PLANES_ONLY".."1"
     )
 
     EnumConstant(

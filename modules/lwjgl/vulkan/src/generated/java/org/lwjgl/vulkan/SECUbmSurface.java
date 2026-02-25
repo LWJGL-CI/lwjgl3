@@ -49,15 +49,15 @@ public class SECUbmSurface {
 
     // --- [ vkGetPhysicalDeviceUbmPresentationSupportSEC ] ---
 
-    /** {@code VkBool32 vkGetPhysicalDeviceUbmPresentationSupportSEC(VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, ubm_device * ubm_device)} */
+    /** {@code VkBool32 vkGetPhysicalDeviceUbmPresentationSupportSEC(VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, ubm_device * device)} */
     @NativeType("VkBool32")
-    public static boolean vkGetPhysicalDeviceUbmPresentationSupportSEC(VkPhysicalDevice physicalDevice, @NativeType("uint32_t") int queueFamilyIndex, @NativeType("ubm_device *") long ubm_device) {
+    public static boolean vkGetPhysicalDeviceUbmPresentationSupportSEC(VkPhysicalDevice physicalDevice, @NativeType("uint32_t") int queueFamilyIndex, @NativeType("ubm_device *") long device) {
         long __functionAddress = physicalDevice.getCapabilities().vkGetPhysicalDeviceUbmPresentationSupportSEC;
         if (CHECKS) {
             check(__functionAddress);
-            check(ubm_device);
+            check(device);
         }
-        return callPPI(physicalDevice.address(), queueFamilyIndex, ubm_device, __functionAddress) != 0;
+        return callPPI(physicalDevice.address(), queueFamilyIndex, device, __functionAddress) != 0;
     }
 
     /** {@code VkResult vkCreateUbmSurfaceSEC(VkInstance instance, VkUbmSurfaceCreateInfoSEC const * pCreateInfo, VkAllocationCallbacks const * pAllocator, VkSurfaceKHR * pSurface)} */
