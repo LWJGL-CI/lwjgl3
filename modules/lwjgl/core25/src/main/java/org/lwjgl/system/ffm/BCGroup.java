@@ -160,27 +160,29 @@ final class BCGroup {
                                 switch (memberLayout) {
                                     case AddressLayout addressLayout -> {
                                         buildAccessor(cb, ValueLayout.ADDRESS, memberLayout, "memGetAddress", MTD_long_long)
-                                            .dup2()
-                                            .invokestatic(CD_MemorySegment, "ofAddress", MTD_MemorySegment_long, true)
-                                            .dup_x2()
-                                            .pop()
-                                            .lconst_0()
-                                            .lcmp()
-                                            .ifThen(Opcode.IFNE, bcb -> buildMemorySegmentReinterpret(bcb, groupDesc, memberMap, method, addressLayout));
-                                        /*if (isNullable(config, method)) {
+                                            .dup2();
+                                        if (isNullable(config, method)) {
                                             cb
-                                                .dup2()
+                                                .lconst_0()
+                                                .lcmp()
+                                                .ifThenElse(Opcode.IFEQ,
+                                                    bcb -> bcb
+                                                        .pop2()
+                                                        .aconst_null(),
+                                                    bcb -> {
+                                                        bcb.invokestatic(CD_MemorySegment, "ofAddress", MTD_MemorySegment_long, true);
+                                                        buildMemorySegmentReinterpret(bcb, groupDesc, memberMap, method, addressLayout);
+                                                    }
+                                                );
+                                        } else {
+                                            cb
                                                 .invokestatic(CD_MemorySegment, "ofAddress", MTD_MemorySegment_long, true)
                                                 .dup_x2()
                                                 .pop()
                                                 .lconst_0()
                                                 .lcmp()
                                                 .ifThen(Opcode.IFNE, bcb -> buildMemorySegmentReinterpret(bcb, groupDesc, memberMap, method, addressLayout));
-                                        } else {
-                                            buildNullPointerCheck(cb);
-                                            cb.invokestatic(CD_MemorySegment, "ofAddress", MTD_MemorySegment_long, true);
-                                            buildMemorySegmentReinterpret(cb, groupDesc, memberMap, method, addressLayout);
-                                        }*/
+                                        }
                                     }
                                     case SequenceLayout sequenceLayout -> {
                                         cb.invokestatic(CD_MemorySegment, "ofAddress", MTD_MemorySegment_long, true);
@@ -432,8 +434,22 @@ final class BCGroup {
                                 // TODO: support nullable
                                 // TODO: check actual target of memberLayout
                                 buildMemberAddress(cb, thisClass, memberOffset)
-                                    .aload(param0)
-                                    .invokeinterface(CD_MemorySegment, "address", MTD_long);
+                                    .aload(param0);
+                                if (isNullable(config, parameter)) {
+                                    if (!parameter.isAnnotationPresent(FFMNullable.class)) {
+                                        cb.ifThenElse(Opcode.IFNULL,
+                                            CodeBuilder::lconst_0,
+                                            b1 -> b1
+                                                .aload(param0)
+                                                .invokeinterface(CD_MemorySegment, "address", MTD_long)
+                                        );
+                                    } else {
+                                        cb.invokeinterface(CD_MemorySegment, "address", MTD_long);
+                                    }
+                                } else {
+                                    cb.invokeinterface(CD_MemorySegment, "address", MTD_long);
+                                    buildNullPointerCheck(cb);
+                                }
                                 buildAccessor(cb, ValueLayout.ADDRESS, memberLayout, "memPutAddress", MTD_void_long_long);
                             } else if (parameterType == String.class) {
                                 if (!(memberLayout instanceof SequenceLayout sequenceLayout)) {

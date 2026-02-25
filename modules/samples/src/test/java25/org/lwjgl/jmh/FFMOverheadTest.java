@@ -77,14 +77,14 @@ public class FFMOverheadTest {
         void noop_crit();
 
         @FFMName("org_lwjgl_system_noop_params")
-        void noop_params(@Nullable MemorySegment param0, @Nullable MemorySegment param1, int param2);
+        void noop_params(@FFMNullable MemorySegment param0, @FFMNullable MemorySegment param1, int param2);
 
         @FFMName("org_lwjgl_system_noop_params")
         void noop_params_checked(MemorySegment param0, MemorySegment param1, int param2);
 
         @FFMCritical
         @FFMName("org_lwjgl_system_noop_params")
-        void noop_params_crit(@Nullable MemorySegment param0, @Nullable MemorySegment param1, int param2);
+        void noop_params_crit(@FFMNullable MemorySegment param0, @FFMNullable MemorySegment param1, int param2);
 
         @FFMCritical
         @FFMName("org_lwjgl_system_noop_params")

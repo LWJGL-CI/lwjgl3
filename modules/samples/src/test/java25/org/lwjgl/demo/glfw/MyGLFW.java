@@ -230,10 +230,10 @@ public interface MyGLFW {
     void GetMonitorPos(@FFMPointer long monitor, MemorySegment xpos, MemorySegment ypos);
 
     @FFMDefinition("void glfwGetMonitorPhysicalSize(GLFWmonitor* monitor, int* widthMM, int* heightMM)")
-    void GetMonitorPhysicalSize(@FFMPointer long monitor, @Nullable MemorySegment widthMM, @Nullable MemorySegment heightMM);
+    void GetMonitorPhysicalSize(@FFMPointer long monitor, @FFMNullable MemorySegment widthMM, @FFMNullable MemorySegment heightMM);
 
     @FFMDefinition("void glfwGetMonitorContentScale(GLFWmonitor* monitor, float* xscale, float* yscale)")
-    void GetMonitorContentScale(@FFMPointer long monitor, @Nullable MemorySegment xscale, @Nullable MemorySegment yscale);
+    void GetMonitorContentScale(@FFMPointer long monitor, @FFMNullable MemorySegment xscale, @FFMNullable MemorySegment yscale);
 
     @FFMDefinition("char const * glfwGetMonitorName(GLFWmonitor * monitor)")
     String GetMonitorName(@FFMPointer long monitor);

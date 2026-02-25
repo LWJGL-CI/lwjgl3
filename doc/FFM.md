@@ -35,7 +35,15 @@ If an application faces unexpected compatibility or performance issues with the 
 
 ## Known issues with the design
 
-* Need to decide on `null` vs `MemorySegment.NULL` at the LWJGL API level.
+* The nullability of `MemorySegment` parameters is awkward.
+  - FFM uses `MemorySegment.NULL` to represent null pointers (for efficiency). Passing `null` to a `MemorySegment` parameter, even if the native function accepts `NULL`, results in an exception.
+  - This design choice hides information from the type system.
+    - `@Nullable` annotations are not applicable.
+    - In Valhalla world, all `MemorySegment` parameters are null-restricted, regardless of what the native side accepts.
+  - LWJGL generates wrapper methods around FFM downcalls that support different behavior, depending on annotations.
+    - `MemorySegment` parameters without nullability annotations are considered non-nullable. Passing `null` or `MemorySegment.NULL` will result in an exception.
+    - `MemorySegment` parameters annotated with `@FFMNullable` are null-restricted (`null` results in an exception) but allow `MemorySegment.NULL` to be passed.
+    - `MemorySegment` parameters with a `@Nullable` annotation are considered nullable and LWJGL automatically replaces `null` arguments with `MemorySegment.NULL`.
 * The API currently uses a naming convention with `ffm` prefixes for methods and `@FFM<Name>` for annotations).
   - Consider alternatives.
 * Move to a top-level package? (e.g. `org.lwjgl.ffm`)

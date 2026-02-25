@@ -121,6 +121,19 @@ final class BCUtil {
         }
     }
 
+    private static <T extends AnnotatedElement> void checkConflictingNullable(FFMConfig config, T element, Function<T, AnnotatedType> annotatedTypeProvider) {
+        if (DEBUG) {
+            var nullableAnnotation = config.nullableAnnotation;
+            if (nullableAnnotation != null) {
+                if (config.nullableAnnotationOnType
+                    ? annotatedTypeProvider.apply(element).isAnnotationPresent(nullableAnnotation)
+                    : element.isAnnotationPresent(nullableAnnotation)) {
+                    throw new IllegalStateException("Cannot use both nullable and @FFMNullable");
+                }
+            }
+        }
+    }
+
     private static void checkFFMNullableOnReference(AnnotatedElement element) {
         if (DEBUG && element.isAnnotationPresent(FFMNullable.class)) {
             throw new IllegalStateException("The FFMNullable annotation can be applied to @FFMPointer long parameters only");
@@ -153,9 +166,35 @@ final class BCUtil {
             return element.isAnnotationPresent(FFMNullable.class);
         }
 
-        var nullableAnnotation = config.nullableAnnotation;
-        checkFFMNullableOnReference(element);
+        /*
+        @FFMNullable @Nullable MemorySegment
+            * fail generation
 
+        @Nullable MemorySegment
+            * null -> swap with MemorySegment.NULL in wrapper
+            * MemorySegment.NULL -> pass as is
+            * non-null -> pass as is
+
+        @FFMNullable MemorySegment
+            * null -> not allowed / NPE
+            * MemorySegment.NULL -> pass as is
+            * non-null -> pass as is
+
+        MemorySegment
+            * null -> not allowed / NPE
+            * MemorySegment.NULL -> fail in check
+            * non-null -> pass as is
+         */
+        if (type == MemorySegment.class) {
+            if (element.isAnnotationPresent(FFMNullable.class)) {
+                checkConflictingNullable(config, element, annotatedTypeProvider);
+                return true;
+            }
+        } else {
+            checkFFMNullableOnReference(element);
+        }
+
+        var nullableAnnotation = config.nullableAnnotation;
         if (nullableAnnotation != null) {
             return config.nullableAnnotationOnType
                 ? annotatedTypeProvider.apply(element).isAnnotationPresent(nullableAnnotation)

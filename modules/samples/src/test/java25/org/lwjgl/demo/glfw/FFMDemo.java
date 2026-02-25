@@ -82,14 +82,14 @@ public final class FFMDemo {
         }
 
         try (var stack = stackPush()) {
-            var count_p     = stack.allocateFrom(ValueLayout.JAVA_INT, 1);
+            var count_p     = stack.allocateFrom(ValueLayout.JAVA_INT, 0);
             var monitors_pp = glfw.GetMonitors(count_p);
             if (!MemorySegment.NULL.equals(monitors_pp)) {
                 var count    = count_p.getAtIndex(ValueLayout.JAVA_INT, 0);
                 var monitors = monitors_pp.reinterpret(ValueLayout.ADDRESS.scale(0, count));
 
-                var xpos = stack.allocateFrom(ValueLayout.JAVA_INT, 1);
-                var ypos = stack.allocateFrom(ValueLayout.JAVA_INT, 1);
+                var xpos = stack.allocateFrom(ValueLayout.JAVA_INT, 0);
+                var ypos = stack.allocateFrom(ValueLayout.JAVA_INT, 0);
                 for (var i = 0; i < count; i++) {
                     var monitor = monitors.getAtIndex(ValueLayout.ADDRESS, i).address();
                     glfw.GetMonitorPos(monitor, xpos, ypos);

@@ -113,7 +113,7 @@ abstract sealed class BCCall
         FF_BINDER,
         /** Returns group by value */
         FF_BY_VALUE,
-        /** Needs a type conversion (string, i2b/b2i, raw pointer on 32-bit system) */
+        /** Needs a type conversion (nullable MemorySegment, string, i2b/b2i, raw pointer on 32-bit system) */
         FF_TYPE_CONVERSION,
         /** Need to pass 2 leading NULL arguments */
         FF_JNI,

@@ -6,7 +6,7 @@ package org.lwjgl.system.ffm;
 
 import java.lang.annotation.*;
 
-/** Marks an unsafe pointer parameter as nullable. */
+/** Marks a {@link java.lang.foreign.MemorySegment MemorySegment} or unsafe pointer parameter as nullable. */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FFMNullable {

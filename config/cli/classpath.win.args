@@ -45,6 +45,7 @@ bin/classes/test;\
 bin/classes/samples;\
 ../lwjgl3-demos/target/classes;\
 modules/samples/src/test/resources;\
+bin/libs/java/jspecify.jar;\
 bin/libs/java/testng.jar;\
 bin/libs/java/jcommander.jar;\
 bin/libs/java/jquery.jar;\

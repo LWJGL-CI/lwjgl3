@@ -1017,8 +1017,8 @@ public class StructTest {
             int ai_protocol();
             int ai_addrlen();
             @FFMPointer long ai_addr();
-            @Nullable String ai_canonname();
-            @Nullable addrinfo ai_next(); // recursive access
+            @MyNullable String ai_canonname();
+            @MyNullable addrinfo ai_next(); // recursive access
 
             addrinfo ai_flags(int value);
             addrinfo ai_family(int value);
@@ -1026,8 +1026,8 @@ public class StructTest {
             addrinfo ai_protocol(int value);
             addrinfo ai_addrlen(int value);
             addrinfo ai_addr(@FFMNullable @FFMPointer long value);
-            addrinfo ai_canonname(@Nullable MemorySegment value);
-            addrinfo ai_next(@Nullable addrinfo value); // recursive access
+            addrinfo ai_canonname(@MyNullable MemorySegment value);
+            addrinfo ai_next(@MyNullable addrinfo value); // recursive access
         }
 
         Objects.requireNonNull(addrinfo.$.layout());
@@ -2478,6 +2478,34 @@ public class StructTest {
 
             assertEquals(s.a(), 0xFEEDBEEF);
             assertEquals(s.b(), 0xBAADF00D);
+        }
+    }
+
+    public void testNullable() {
+        interface S {
+            StructBinder<S> $ = ffmStruct(S.class)
+                .m("a", int32_t.p())
+                .m("b", int32_t.p())
+                .build();
+
+            MemorySegment a();
+            @MyNullable MemorySegment b();
+
+            S a(@FFMNullable MemorySegment a);
+            S b(@MyNullable MemorySegment b);
+        }
+
+        try (var arena = Arena.ofConfined()) {
+            var s = S.$.allocate(arena);
+
+            assertEqualsSegment(s.a(), MemorySegment.NULL);
+            assertNull(s.b());
+
+            assertThrows(NullPointerException.class, () -> s.a(null));
+            s
+                .a(MemorySegment.NULL)
+                .b(null)
+                .b(MemorySegment.NULL);
         }
     }
 
