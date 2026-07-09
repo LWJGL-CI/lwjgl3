@@ -23,7 +23,7 @@ jobs:
         with:
           fetch-depth: 3
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v5.4.0
         with:
           distribution: 'zulu'
           java-version: '8'
@@ -60,7 +60,7 @@ jobs:
         with:
           fetch-depth: 3
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v5.4.0
         with:
           distribution: 'zulu'
           java-version: '8'
@@ -133,7 +133,7 @@ jobs:
         with:
           fetch-depth: 3
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v5.4.0
         with:
           distribution: 'zulu'
           java-version: '8'
@@ -226,7 +226,7 @@ jobs:
         with:
           fetch-depth: 3
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v5.4.0
         with:
           distribution: 'zulu'
           java-version: '8'
@@ -287,7 +287,7 @@ jobs:
         with:
           fetch-depth: 3
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v5.4.0
         with:
           distribution: 'zulu'
           java-version: '8'
@@ -345,7 +345,7 @@ jobs:
         run: git clone https://github.com/LWJGL-CI/OculusSDK.git ../OculusSDK
         if: contains(matrix.ARCH, 'arm') != true
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v5.4.0
         with:
           distribution: 'zulu'
           java-version: '8'

@@ -35,7 +35,7 @@ jobs:
           LWJGL_BUILD=$(cat next-build.txt)
           echo "LWJGL_BUILD=$LWJGL_BUILD" >> $GITHUB_ENV
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v5.4.0
         with:
           distribution: 'zulu'
           java-version: |
