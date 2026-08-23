@@ -1,0 +1,163 @@
+git:
+  depth: 3
+env:
+  global:
+  - secure: "AzM98HKS2RDP+/WdvsFiEqTbVPwLBEAtNXDQPR7cV1gAEZoNhri/iINnRAHtECgVQDt2gKmxEiyOA07zMKPpt5PwhoyZUnICwxl1t2FOkTL4LlfI+3ew1rf4F8wmaSQX/BRT7b3IgyEI0RFRCow8KH49X8xdEtAFYJB3YFu2Y6M="
+  - secure: "BDNmD9y3mdZEQoFgXW2dC1FawofkThFwbITidMqeKLxSstNxQGKCpxOFAV604kaTGsf7ihpdm8WYE5IjHKTaoewdQ9hLXZPtswWXq5Ebe2gKHqJVNZa2bFD6hQBD2S7BLWWeAVIoLkyfV/QLnplOquUZTXWZ3TW2A+IXzQE+AnE="
+  - AWS_DEFAULT_REGION: "us-east-1"
+  - JDK_LINUX: https://cdn.azul.com/zulu/bin/zulu8.42.0.23-ca-fx-jdk8.0.232-linux_x64.tar.gz
+  - JDK_MACOS: https://cdn.azul.com/zulu/bin/zulu8.42.0.23-ca-fx-jdk8.0.232-macosx_x64.tar.gz
+
+matrix:
+  include:
+
+  # -----------------
+  - name: "Linux x64"
+  # -----------------
+    dist: xenial
+    language: java
+
+    addons:
+      apt:
+        packages:
+        - ant
+        - gcc-4.8
+        - g++-4.8
+        - gcc-4.9
+        - g++-4.9
+        - xorg-dev
+        - libgtk-3-dev
+        - libglu-dev
+        - libgl1-mesa-glx
+        - libx11-dev
+
+    before_install:
+    - pip install --user awscli
+    - export PATH=$PATH:$HOME/.local/bin
+
+    script:
+    - export LWJGL_BUILD_TYPE=nightly
+    - curl $JDK_LINUX --output jdk8.tar.gz
+    - mkdir jdk8 && tar xf jdk8.tar.gz -C jdk8 --strip-components 1
+    - JAVA_HOME=$TRAVIS_BUILD_DIR/jdk8 ant compile-templates tests upload-native -Dgcc.version=4.8 -Dgcc.libpath.opengl=/usr/lib/x86_64-linux-gnu/mesa
+
+  # -----------------
+  - name: "Linux arm32"
+  # -----------------
+    dist: xenial
+    language: java
+
+    addons:
+      apt:
+        packages:
+        - ant
+        - gcc-4.8-arm-linux-gnueabihf
+        - g++-4.8-arm-linux-gnueabihf
+        - gcc-4.9-arm-linux-gnueabihf
+        - g++-4.9-arm-linux-gnueabihf
+        - libc6-dev-armhf-cross
+
+    before_install:
+    - pip install --user awscli
+    - export PATH=$PATH:$HOME/.local/bin
+    - sudo sed -i 's/deb http/deb [arch=amd64,i386] http/' /etc/apt/sources.list
+    - sudo grep "ubuntu.com/ubuntu" /etc/apt/sources.list | sudo tee /etc/apt/sources.list.d/ports.list
+    - sudo sed -i 's/amd64,i386/armhf,arm64/' /etc/apt/sources.list.d/ports.list
+    - sudo sed -i 's#http://.*/ubuntu#http://ports.ubuntu.com/ubuntu-ports#' /etc/apt/sources.list.d/ports.list
+    - sudo dpkg --add-architecture armhf
+    - sudo apt-get update || true
+    - sudo apt-get -yq install libglu-dev:armhf libgl1-mesa-glx:armhf libx11-dev:armhf -o Dpkg::Options::="--force-overwrite"
+
+    script:
+    - export LWJGL_BUILD_TYPE=nightly
+    - export LWJGL_BUILD_ARCH=arm32
+    - curl $JDK_LINUX --output jdk8.tar.gz
+    - mkdir jdk8 && tar xf jdk8.tar.gz -C jdk8 --strip-components 1
+    - JAVA_HOME=$TRAVIS_BUILD_DIR/jdk8 ant compile-templates upload-native -Dgcc.version=4.8 -Dgcc.libpath.opengl=/usr/lib/arm-linux-gnueabihf/mesa
+
+  # -----------------
+  - name: "Linux arm64"
+  # -----------------
+    dist: xenial
+    language: java
+    jdk: openjdk8
+
+    addons:
+      apt:
+        packages:
+        - ant
+        - gcc-4.8-aarch64-linux-gnu
+        - g++-4.8-aarch64-linux-gnu
+        - gcc-4.9-aarch64-linux-gnu
+        - g++-4.9-aarch64-linux-gnu
+        - libc6-dev-arm64-cross
+
+    before_install:
+    - pip install --user awscli
+    - export PATH=$PATH:$HOME/.local/bin
+    - sudo sed -i 's/deb http/deb [arch=amd64,i386] http/' /etc/apt/sources.list
+    - sudo grep "ubuntu.com/ubuntu" /etc/apt/sources.list | sudo tee /etc/apt/sources.list.d/ports.list
+    - sudo sed -i 's/amd64,i386/armhf,arm64/' /etc/apt/sources.list.d/ports.list
+    - sudo sed -i 's#http://.*/ubuntu#http://ports.ubuntu.com/ubuntu-ports#' /etc/apt/sources.list.d/ports.list
+    - sudo dpkg --add-architecture arm64
+    - sudo apt-get update || true
+    - sudo apt-get -yq install libglu-dev:arm64 libgl1-mesa-glx:arm64 libx11-dev:arm64 -o Dpkg::Options::="--force-overwrite"
+
+    script:
+    - export LWJGL_BUILD_TYPE=nightly
+    - export LWJGL_BUILD_ARCH=arm64
+    - curl $JDK_LINUX --output jdk8.tar.gz
+    - mkdir jdk8 && tar xf jdk8.tar.gz -C jdk8 --strip-components 1
+    - JAVA_HOME=$TRAVIS_BUILD_DIR/jdk8 ant compile-templates upload-native -Dgcc.version=4.8 -Dgcc.libpath.opengl=/usr/lib/aarch64-linux-gnu/mesa
+
+  # -----------------
+  - name: "Linux mips64"
+  # -----------------
+    dist: xenial
+    language: java
+    jdk: openjdk8
+
+    addons:
+      apt:
+        packages:
+        - ant
+        - gcc-5-mips64el-linux-gnuabi64
+        - g++-5-mips64el-linux-gnuabi64
+        - libc6-dev-mips64el-cross
+
+    before_install:
+    - pip install --user awscli
+    - export PATH=$PATH:$HOME/.local/bin
+    - sudo rm -rf /etc/apt/sources.list
+    - sudo sh -c "echo 'deb http://deb.debian.org/debian stretch main' >> /etc/apt/sources.list"
+    - sudo dpkg --add-architecture mips64el
+    - sudo apt-get update || true
+    - sudo apt-get -yq --allow-unauthenticated install libglu-dev:mips64el libgl1-mesa-glx:mips64el libx11-dev:mips64el libdrm2:mips64el libglapi-mesa:mips64el libgl1-mesa-dev:mips64el libgl-dev:mips64el -o Dpkg::Options::="--force-overwrite"
+
+    script:
+    - export LWJGL_BUILD_TYPE=nightly
+    - export LWJGL_BUILD_ARCH=mips64
+    - curl $JDK_LINUX --output jdk8.tar.gz
+    - mkdir jdk8 && tar xf jdk8.tar.gz -C jdk8 --strip-components 1
+    - JAVA_HOME=$TRAVIS_BUILD_DIR/jdk8 ant compile-templates upload-native -Dgcc.version=5 -Dgcc.libpath.opengl=/usr/lib/mips64el-linux-gnuabi64/mesa
+
+  # -----------------
+  - name: "macOS"
+  # -----------------
+    language: objective-c
+    osx_image: xcode11.3
+    compiler: clang
+    
+    before_install:
+    - brew update
+
+    install:
+    - brew install ant
+    - brew install awscli
+
+    script:
+    - export JAVA_HOME=$(/usr/libexec/java_home)
+    - export LWJGL_BUILD_TYPE=nightly
+    - curl $JDK_MACOS --output jdk8.tar.gz
+    - mkdir jdk8 && tar xf jdk8.tar.gz -C jdk8 --strip-components 1
+    - JAVA_HOME=$TRAVIS_BUILD_DIR/jdk8 ant compile-templates tests upload-native
